@@ -164,9 +164,31 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Transform actual standings to match the TeamStanding interface
+    const actualStandingsFormatted = actualStandings?.map((standing) => {
+      const teamMeta = teamMetadata?.[standing.teamId] || {
+        name: `Team ${standing.teamId}`,
+        owner: `Owner ${standing.teamId}`,
+        abbrev: `T${standing.teamId}`,
+      };
+
+      const totalGames = standing.wins + standing.losses + standing.ties;
+      const winPercentage = totalGames > 0 ? standing.wins / totalGames : 0;
+
+      return {
+        teamId: standing.teamId,
+        teamName: teamMeta.name,
+        owner: teamMeta.owner,
+        wins: standing.wins,
+        losses: standing.losses,
+        winPercentage,
+      };
+    }) || null;
+
     return NextResponse.json({
       season,
       standings,
+      actualStandings: actualStandingsFormatted,
       stats: {
         luckiest: luckiestStat,
         unluckiest: unluckiestStat,

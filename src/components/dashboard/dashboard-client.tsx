@@ -7,6 +7,16 @@ import { LoadingTable, LoadingStats, ErrorMessage } from '@/components/shared';
 import { RefreshCwIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+interface TeamStanding {
+  rank: number;
+  teamId: string;
+  teamName: string;
+  owner: string;
+  wins: number;
+  losses: number;
+  winPercentage: number;
+}
+
 interface DashboardData {
   season: number;
   standings: Array<{
@@ -22,6 +32,14 @@ interface DashboardData {
     totalPoints: number;
     consistency: number;
   }>;
+  actualStandings?: Array<{
+    teamId: string;
+    teamName: string;
+    owner: string;
+    wins: number;
+    losses: number;
+    winPercentage: number;
+  }> | null;
   stats: {
     luckiest: any | null;
     unluckiest: any | null;
@@ -142,7 +160,7 @@ export function DashboardClient() {
       {/* Record Comparison Table */}
       <RecordComparisonTable
         trueStandings={data.standings}
-        actualStandings={undefined} // Will be integrated later
+        actualStandings={data.actualStandings || undefined}
       />
     </div>
   );

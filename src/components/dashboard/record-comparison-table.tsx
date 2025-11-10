@@ -23,9 +23,18 @@ interface TeamStanding {
   winPercentage: number;
 }
 
+interface ActualStanding {
+  teamId: string;
+  teamName: string;
+  owner: string;
+  wins: number;
+  losses: number;
+  winPercentage: number;
+}
+
 interface RecordComparisonTableProps {
   trueStandings: TeamStanding[];
-  actualStandings?: TeamStanding[];
+  actualStandings?: ActualStanding[];
   className?: string;
 }
 
