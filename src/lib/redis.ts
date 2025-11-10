@@ -3,7 +3,6 @@ import { REDIS_KEYS } from '@/constants';
 import type {
   WeeklyScore,
   TrueRecord,
-  TeamStanding,
   Team,
 } from '@/types';
 
@@ -101,9 +100,19 @@ export async function getAllTrueRecords(season: number | string): Promise<Record
 }
 
 // Actual Standings Operations
+// Simple type for actual standings from ESPN
+export type ActualStanding = {
+  teamId: string;
+  wins: number;
+  losses: number;
+  ties: number;
+  points: number;
+  pointsAgainst: number;
+};
+
 export async function setActualStandings(
   season: string,
-  standings: TeamStanding[]
+  standings: ActualStanding[]
 ): Promise<void> {
   const client = getRedisClient();
   const key = REDIS_KEYS.ACTUAL_STANDINGS(season);
@@ -112,10 +121,10 @@ export async function setActualStandings(
 
 export async function getActualStandings(
   season: string
-): Promise<TeamStanding[] | null> {
+): Promise<ActualStanding[] | null> {
   const client = getRedisClient();
   const key = REDIS_KEYS.ACTUAL_STANDINGS(season);
-  return await client.get<TeamStanding[]>(key);
+  return await client.get<ActualStanding[]>(key);
 }
 
 // Team Metadata Operations

@@ -4,6 +4,8 @@ import {
   calculateRecordStats,
   calculateAveragePoints,
   calculateConsistency,
+  findLuckiestTeam,
+  findUnluckiestTeam,
 } from '@/services/true-champion';
 
 /**
@@ -20,10 +22,11 @@ export async function GET(request: NextRequest) {
     const leagueId = process.env.ESPN_LEAGUE_ID || '';
 
     // Fetch all required data in parallel
-    const [trueRecords, teamMetadata, lastUpdate] = await Promise.all([
+    const [trueRecords, teamMetadata, lastUpdate, actualStandings] = await Promise.all([
       redis.getAllTrueRecords(season),
       redis.getTeamMetadata(leagueId),
       redis.getLastUpdate(leagueId),
+      redis.getActualStandings(season.toString()),
     ]);
 
     // Check if we have data
@@ -113,13 +116,60 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Calculate luck stats if we have actual standings
+    let luckiestStat = null;
+    let unluckiestStat = null;
+
+    console.log('[Dashboard API] actualStandings:', actualStandings ? `${actualStandings.length} teams` : 'null');
+
+    if (actualStandings && actualStandings.length > 0) {
+      // Convert actual standings array to the format expected by luck functions
+      const actualRecordsMap: Record<string, { wins: number; losses: number }> = {};
+      actualStandings.forEach((standing) => {
+        actualRecordsMap[standing.teamId] = {
+          wins: standing.wins,
+          losses: standing.losses,
+        };
+      });
+
+      // Find luckiest and unluckiest teams
+      const luckiest = findLuckiestTeam(actualRecordsMap, trueRecords);
+      const unluckiest = findUnluckiestTeam(actualRecordsMap, trueRecords);
+
+      // Enrich with team metadata
+      if (luckiest) {
+        const teamMeta = teamMetadata?.[luckiest.teamId] || {
+          name: `Team ${luckiest.teamId}`,
+          owner: `Owner ${luckiest.teamId}`,
+        };
+        luckiestStat = {
+          teamId: luckiest.teamId,
+          teamName: teamMeta.name,
+          owner: teamMeta.owner,
+          differential: luckiest.differential,
+        };
+      }
+
+      if (unluckiest) {
+        const teamMeta = teamMetadata?.[unluckiest.teamId] || {
+          name: `Team ${unluckiest.teamId}`,
+          owner: `Owner ${unluckiest.teamId}`,
+        };
+        unluckiestStat = {
+          teamId: unluckiest.teamId,
+          teamName: teamMeta.name,
+          owner: teamMeta.owner,
+          differential: unluckiest.differential,
+        };
+      }
+    }
+
     return NextResponse.json({
       season,
       standings,
       stats: {
-        // Luck stats will be null until we have actual records integrated
-        luckiest: null,
-        unluckiest: null,
+        luckiest: luckiestStat,
+        unluckiest: unluckiestStat,
         mostConsistent: {
           teamId: mostConsistentTeam.teamId,
           teamName: mostConsistentTeam.teamName,

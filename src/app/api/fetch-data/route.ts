@@ -41,10 +41,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch from ESPN API
-    const scores = await espnApi.getWeeklyScores(targetWeek);
+    const [scores, leagueData] = await Promise.all([
+      espnApi.getWeeklyScores(targetWeek),
+      espnApi.fetchLeagueData(targetWeek),
+    ]);
+
+    // Parse and store actual standings
+    const actualStandings = espnApi.parseActualStandings(leagueData);
 
     // Store in Redis
-    await redis.setWeeklyScores(season, targetWeek, scores);
+    await Promise.all([
+      redis.setWeeklyScores(season, targetWeek, scores),
+      redis.setActualStandings(season.toString(), actualStandings),
+    ]);
 
     // Update last update timestamp
     await redis.setLastUpdate(

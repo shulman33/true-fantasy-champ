@@ -50,6 +50,19 @@ async function populateESPNData() {
       }
     }
 
+    // Step 1.5: Fetch and store actual standings
+    // Don't pass a week to get season-to-date standings
+    console.log('\n📋 Fetching actual standings from ESPN...');
+    const leagueData = await espnService.fetchLeagueData();
+    const actualStandings = espnService.parseActualStandings(leagueData);
+    console.log('  Sample standing:', JSON.stringify(actualStandings[0], null, 2));
+    await redis.setActualStandings(season, actualStandings);
+    console.log(`  ✓ Stored actual standings for ${actualStandings.length} teams`);
+
+    // Verify we can retrieve it
+    const retrieved = await redis.getActualStandings(season);
+    console.log(`  ✓ Verified retrieval: ${retrieved ? retrieved.length : 'null'} teams`);
+
     // Step 2: Calculate true records
     console.log('\n🧮 Calculating true records...');
     const trueRecords = trueChampionService.recalculateSeasonRecords(weeklyData);

@@ -71,9 +71,13 @@ const ESPNTeamSchema = z.object({
   nickname: z.string().optional(),
   owners: z.array(z.string()).optional(),
   record: z.object({
-    wins: z.number().optional(),
-    losses: z.number().optional(),
-    ties: z.number().optional(),
+    overall: z.object({
+      wins: z.number().optional(),
+      losses: z.number().optional(),
+      ties: z.number().optional(),
+      pointsFor: z.number().optional(),
+      pointsAgainst: z.number().optional(),
+    }).optional(),
   }).optional(),
   valuesByStat: z.record(z.string(), z.number()).optional(),
   points: z.number().optional(),
@@ -196,6 +200,66 @@ export class ESPNApiService {
       }
 
       throw new Error('Unknown error fetching ESPN data');
+    }
+  }
+
+  /**
+   * Fetch league data including team standings from ESPN API
+   * @param week - Optional week number for context
+   * @returns Parsed ESPN API response with full team data including records
+   */
+  async fetchLeagueData(week?: number): Promise<ESPNResponse> {
+    const url = `${this.baseUrl}/seasons/${this.season}/segments/0/leagues/${this.leagueId}`;
+
+    const params = new URLSearchParams();
+    params.append('view', 'mMatchupScore');
+    params.append('view', 'mScoreboard');
+    params.append('view', 'mTeam');
+    params.append('view', 'mStandings');
+    if (week) {
+      params.append('scoringPeriodId', week.toString());
+    }
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+    };
+
+    // Add authentication cookies if provided (for private leagues)
+    if (this.swid && this.espnS2) {
+      headers['Cookie'] = `swid=${this.swid}; espn_s2=${this.espnS2}`;
+    }
+
+    try {
+      const response = await fetch(`${url}?${params}`, {
+        method: 'GET',
+        headers,
+        cache: 'no-store', // Don't cache API responses
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `ESPN API request failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      // Validate response with Zod
+      const validatedData = ESPNResponseSchema.parse(data);
+
+      return validatedData;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('ESPN API response validation failed:', error.issues);
+        throw new Error('Invalid ESPN API response format');
+      }
+
+      if (error instanceof Error) {
+        console.error('ESPN API fetch error:', error.message);
+        throw error;
+      }
+
+      throw new Error('Unknown error fetching ESPN league data');
     }
   }
 
@@ -335,11 +399,11 @@ export class ESPNApiService {
 
     return response.teams.map(team => ({
       teamId: team.id.toString(),
-      wins: team.record?.wins ?? 0,
-      losses: team.record?.losses ?? 0,
-      ties: team.record?.ties ?? 0,
-      points: team.points ?? 0,
-      pointsAgainst: team.pointsAgainst ?? 0,
+      wins: team.record?.overall?.wins ?? 0,
+      losses: team.record?.overall?.losses ?? 0,
+      ties: team.record?.overall?.ties ?? 0,
+      points: team.record?.overall?.pointsFor ?? team.points ?? 0,
+      pointsAgainst: team.record?.overall?.pointsAgainst ?? team.pointsAgainst ?? 0,
     }));
   }
 
@@ -419,9 +483,13 @@ export class ESPNApiService {
       nickname: teamNames[index].nickname,
       owners: [`member-${id}`],
       record: {
-        wins: Math.floor(Math.random() * 10),
-        losses: Math.floor(Math.random() * 10),
-        ties: 0,
+        overall: {
+          wins: Math.floor(Math.random() * 10),
+          losses: Math.floor(Math.random() * 10),
+          ties: 0,
+          pointsFor: Math.floor(Math.random() * 1000) + 500,
+          pointsAgainst: Math.floor(Math.random() * 1000) + 500,
+        },
       },
       points: Math.floor(Math.random() * 1000) + 500,
       pointsAgainst: Math.floor(Math.random() * 1000) + 500,
