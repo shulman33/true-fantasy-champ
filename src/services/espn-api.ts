@@ -1,30 +1,31 @@
 import { z } from 'zod';
 
 // ESPN API Response Schemas
+// Note: Made all nested fields optional as ESPN API returns incomplete data for some fields
 const PlayerSchema = z.object({
   id: z.number(),
-  firstName: z.string(),
-  lastName: z.string(),
-  fullName: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  fullName: z.string().optional(),
   jersey: z.string().optional(),
-  proTeamId: z.number(),
-  defaultPositionId: z.number(),
-  eligibleSlots: z.array(z.number()),
+  proTeamId: z.number().optional(),
+  defaultPositionId: z.number().optional(),
+  eligibleSlots: z.array(z.number()).optional(),
   injuryStatus: z.enum(['ACTIVE', 'QUESTIONABLE', 'DOUBTFUL', 'OUT', 'INJURY_RESERVE']).optional(),
   stats: z.array(z.object({
-    scoringPeriodId: z.number(),
-    appliedTotal: z.number(),
-    projectedTotal: z.number(),
+    scoringPeriodId: z.number().optional(),
+    appliedTotal: z.number().optional(),
+    projectedTotal: z.number().optional(),
   })).optional(),
-});
+}).passthrough();
 
 const RosterEntrySchema = z.object({
-  playerId: z.number(),
-  lineupSlotId: z.number(),
+  playerId: z.number().optional(),
+  lineupSlotId: z.number().optional(),
   playerPoolEntry: z.object({
     player: PlayerSchema,
   }).optional(),
-});
+}).passthrough();
 
 const TeamMatchupDataSchema = z.object({
   teamId: z.number(),
@@ -32,18 +33,18 @@ const TeamMatchupDataSchema = z.object({
   rosterForCurrentScoringPeriod: z.object({
     entries: z.array(RosterEntrySchema),
   }).optional(),
-});
+}).passthrough();
 
 const ESPNMatchupSchema = z.object({
   id: z.number(),
   matchupPeriodId: z.number(),
   home: TeamMatchupDataSchema,
   away: TeamMatchupDataSchema,
-  winner: z.enum(['away', 'home', 'undecided']).optional(),
-});
+  winner: z.string().optional(), // Can be 'away', 'home', 'undecided', 'AWAY', 'HOME', etc.
+}).passthrough();
 
 const LeagueSettingsSchema = z.object({
-  name: z.string(),
+  name: z.string().optional(),
   scheduleSettings: z.object({
     divisions: z.array(z.object({
       id: z.number().optional(),
@@ -60,7 +61,7 @@ const LeagueSettingsSchema = z.object({
   scoringSettings: z.object({
     homeTeamBonus: z.number().optional(),
   }).optional(),
-});
+}).passthrough();
 
 const ESPNTeamSchema = z.object({
   id: z.number(),
@@ -70,14 +71,14 @@ const ESPNTeamSchema = z.object({
   nickname: z.string().optional(),
   owners: z.array(z.string()).optional(),
   record: z.object({
-    wins: z.number(),
-    losses: z.number(),
-    ties: z.number(),
+    wins: z.number().optional(),
+    losses: z.number().optional(),
+    ties: z.number().optional(),
   }).optional(),
   valuesByStat: z.record(z.string(), z.number()).optional(),
   points: z.number().optional(),
   pointsAgainst: z.number().optional(),
-});
+}).passthrough();
 
 const ESPNMemberSchema = z.object({
   id: z.string(),
