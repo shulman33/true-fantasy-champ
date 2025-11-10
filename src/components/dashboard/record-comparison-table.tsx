@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -152,10 +153,15 @@ export function RecordComparisonTable({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <span className="font-bold text-white">{team.teamName}</span>
+                      <Link
+                        href={`/team/${team.teamId}`}
+                        className="flex flex-col gap-1 hover:opacity-80 transition-opacity cursor-pointer group"
+                      >
+                        <span className="font-bold text-white group-hover:text-retro-yellow transition-colors">
+                          {team.teamName}
+                        </span>
                         <span className="text-xs text-gray-400 font-mono">{team.owner}</span>
-                      </div>
+                      </Link>
                     </TableCell>
                     <TableCell className="text-center">
                       {hasActualData && actualTeam ? (

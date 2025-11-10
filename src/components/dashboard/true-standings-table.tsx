@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -139,10 +140,15 @@ export function TrueStandingsTable({ standings, className }: TrueStandingsTableP
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1">
-                      <span className="font-bold text-white">{team.teamName}</span>
+                    <Link
+                      href={`/team/${team.teamId}`}
+                      className="flex flex-col gap-1 hover:opacity-80 transition-opacity cursor-pointer group"
+                    >
+                      <span className="font-bold text-white group-hover:text-retro-yellow transition-colors">
+                        {team.teamName}
+                      </span>
                       <span className="text-xs text-retro-green font-mono">{team.abbrev}</span>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell className="text-gray-300 text-sm">{team.owner}</TableCell>
                   <TableCell className="text-right font-mono font-bold text-white">
