@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { RetroTooltip, RetroTooltipTrigger, RetroTooltipContent } from '@/components/ui/retro-tooltip';
 
 interface StatsCardProps {
   title: string;
@@ -10,6 +11,7 @@ interface StatsCardProps {
   variant?: 'default' | 'success' | 'warning' | 'destructive';
   icon?: React.ReactNode;
   className?: string;
+  tooltipContent?: string;
 }
 
 const variantStyles = {
@@ -43,6 +45,7 @@ export function StatsCard({
   variant = 'default',
   icon,
   className,
+  tooltipContent,
 }: StatsCardProps) {
   const styles = variantStyles[variant];
 
@@ -64,9 +67,45 @@ export function StatsCard({
 
       <CardHeader className="pb-3 relative">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-press-start uppercase tracking-wider text-gray-300">
-            {title}
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-sm font-press-start uppercase tracking-wider text-gray-300">
+              {title}
+            </CardTitle>
+            {tooltipContent && (
+              <RetroTooltip>
+                <RetroTooltipTrigger asChild>
+                  <button
+                    className={cn(
+                      'group inline-flex items-center justify-center',
+                      'w-5 h-5 sm:w-6 sm:h-6',
+                      'border-2 rounded-sm',
+                      'transition-all duration-200',
+                      'hover:scale-110 active:scale-95',
+                      styles.border,
+                      'bg-black/60 hover:bg-black/80',
+                      styles.glow.replace('shadow-[0_0_10px', 'hover:shadow-[0_0_15px')
+                    )}
+                    type="button"
+                    aria-label="Information about this statistic"
+                  >
+                    <span
+                      className={cn(
+                        'font-press-start text-[10px] sm:text-xs',
+                        'transition-colors',
+                        styles.badge.split(' ')[1],
+                        'group-hover:brightness-125'
+                      )}
+                    >
+                      ?
+                    </span>
+                  </button>
+                </RetroTooltipTrigger>
+                <RetroTooltipContent side="top" align="center">
+                  {tooltipContent}
+                </RetroTooltipContent>
+              </RetroTooltip>
+            )}
+          </div>
           {icon && (
             <div className={cn('text-xl', styles.badge.split(' ')[1])}>
               {icon}

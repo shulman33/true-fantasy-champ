@@ -51,6 +51,7 @@ export function StatsGrid({
         }
         variant="success"
         icon={<TrophyIcon />}
+        tooltipContent="Compares actual vs true win percentages. This team's actual record is better than if they played everyone each week—they've benefited from favorable scheduling! Calculated as: (actual wins ÷ total games) - (true wins ÷ total matchups)"
       />
 
       {/* Unluckiest Team */}
@@ -65,6 +66,7 @@ export function StatsGrid({
         }
         variant="destructive"
         icon={<FrownIcon />}
+        tooltipContent="This team has the biggest negative win differential. Their actual win percentage is lower than their true record—they've had tough luck with their schedule and would have more wins if they played everyone each week."
       />
 
       {/* Most Consistent */}
@@ -79,6 +81,7 @@ export function StatsGrid({
         }
         variant="default"
         icon={<ActivityIcon />}
+        tooltipContent="Calculated using standard deviation of weekly scores. Lower values mean more predictable scoring week-to-week. Formula: √(Σ(score - mean)² ÷ weeks played). Lower is better!"
       />
 
       {/* Highest Scoring */}
@@ -93,6 +96,7 @@ export function StatsGrid({
         }
         variant="warning"
         icon={<TrendingUpIcon />}
+        tooltipContent="Simple average of all weekly point totals. Formula: total points ÷ weeks played. This team puts up the biggest numbers on average!"
       />
     </div>
   );

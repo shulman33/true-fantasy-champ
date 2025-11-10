@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from 'lucide-react';
+import { RetroTooltip, RetroTooltipTrigger, RetroTooltipContent } from '@/components/ui/retro-tooltip';
 
 interface TeamStanding {
   rank: number;
@@ -88,7 +89,25 @@ export function RecordComparisonTable({
                   TRUE
                 </TableHead>
                 <TableHead className="font-press-start text-[10px] text-retro-green text-center">
-                  DIFF
+                  <div className="flex items-center justify-center gap-1">
+                    <span>DIFF</span>
+                    <RetroTooltip>
+                      <RetroTooltipTrigger asChild>
+                        <button
+                          className="inline-flex items-center justify-center w-4 h-4 border-2 border-retro-green rounded-sm bg-black/60 hover:bg-black/80 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                          type="button"
+                          aria-label="Information about win differential"
+                        >
+                          <span className="font-press-start text-[8px] text-retro-green group-hover:brightness-125">
+                            ?
+                          </span>
+                        </button>
+                      </RetroTooltipTrigger>
+                      <RetroTooltipContent side="top" align="center">
+                        Win differential shows how many more (or fewer) wins a team has in their actual record compared to their true record. Positive numbers (green) mean lucky schedule, negative numbers (red) mean unlucky schedule. Calculated as: Actual Wins - True Wins.
+                      </RetroTooltipContent>
+                    </RetroTooltip>
+                  </div>
                 </TableHead>
                 <TableHead className="font-press-start text-[10px] text-retro-green text-center">
                   LUCK
