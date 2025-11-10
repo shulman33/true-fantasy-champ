@@ -290,9 +290,17 @@ export class ESPNApiService {
 
     // Extract team metadata
     for (const team of response.teams) {
-      const teamName = team.name || team.location && team.nickname
-        ? `${team.location} ${team.nickname}`
-        : `Team ${team.id}`;
+      // Team name priority: name field, then location + nickname, then default
+      let teamName = team.name;
+      if (!teamName && team.location && team.nickname) {
+        teamName = `${team.location} ${team.nickname}`;
+      } else if (!teamName && team.location) {
+        teamName = team.location;
+      } else if (!teamName && team.nickname) {
+        teamName = team.nickname;
+      } else if (!teamName) {
+        teamName = `Team ${team.id}`;
+      }
 
       // Get owner name from first owner ID
       const ownerId = team.owners?.[0];
