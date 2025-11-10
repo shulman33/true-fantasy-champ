@@ -203,36 +203,36 @@ Build a Next.js 15 application that calculates what each fantasy football team's
 ## Phase 6: Team Details Page
 
 ### Task 6.1: Team Page Setup
-- [ ] Create dynamic route (`app/team/[teamId]/page.tsx`)
-- [ ] Fetch team-specific data
-- [ ] Create page layout
-- [ ] Add breadcrumb navigation
+- [x] Create dynamic route (`app/team/[teamId]/page.tsx`)
+- [x] Fetch team-specific data
+- [x] Create page layout
+- [x] Add breadcrumb navigation
 
 ### Task 6.2: Team Overview Section
-- [ ] Display team name and owner
-- [ ] Show true record and actual record
-- [ ] Display overall statistics
-- [ ] Add team badge/avatar (pixelated)
+- [x] Display team name and owner
+- [x] Show true record and actual record
+- [x] Display overall statistics
+- [x] Add team badge/avatar (pixelated)
 
 ### Task 6.3: Week-by-Week Breakdown
-- [ ] Create `WeeklyPerformanceTable` component
-- [ ] Show each week's score
-- [ ] Display true W-L for each week
-- [ ] Show actual matchup result
-- [ ] Add expandable details per week
+- [x] Create `WeeklyPerformanceTable` component
+- [x] Show each week's score
+- [x] Display true W-L for each week
+- [x] Show actual matchup result
+- [x] Add expandable details per week
 
 ### Task 6.4: Performance Charts
-- [ ] Create `PerformanceChart` component (retro-styled)
-- [ ] Graph weekly scores over time
-- [ ] Show true wins trend
-- [ ] Add comparison overlays
-- [ ] Implement chart library or custom SVG charts
+- [x] Create `PerformanceChart` component (retro-styled)
+- [x] Graph weekly scores over time
+- [x] Show true wins trend
+- [x] Add comparison overlays
+- [x] Implement chart library or custom SVG charts
 
 ### Task 6.5: Head-to-Head Records
-- [ ] Create `HeadToHeadTable` component
-- [ ] Show true record vs each opponent
-- [ ] Calculate total wins/losses per opponent
-- [ ] Add filtering/sorting
+- [x] Create `HeadToHeadTable` component
+- [x] Show true record vs each opponent
+- [x] Calculate total wins/losses per opponent
+- [x] Add filtering/sorting
 
 ---
 
