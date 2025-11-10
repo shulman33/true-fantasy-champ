@@ -1,39 +1,108 @@
 import { z } from 'zod';
 
 // ESPN API Response Schemas
-const ESPNTeamSchema = z.object({
+const PlayerSchema = z.object({
+  id: z.number(),
+  firstName: z.string(),
+  lastName: z.string(),
+  fullName: z.string(),
+  jersey: z.string().optional(),
+  proTeamId: z.number(),
+  defaultPositionId: z.number(),
+  eligibleSlots: z.array(z.number()),
+  injuryStatus: z.enum(['ACTIVE', 'QUESTIONABLE', 'DOUBTFUL', 'OUT', 'INJURY_RESERVE']).optional(),
+  stats: z.array(z.object({
+    scoringPeriodId: z.number(),
+    appliedTotal: z.number(),
+    projectedTotal: z.number(),
+  })).optional(),
+});
+
+const RosterEntrySchema = z.object({
+  playerId: z.number(),
+  lineupSlotId: z.number(),
+  playerPoolEntry: z.object({
+    player: PlayerSchema,
+  }).optional(),
+});
+
+const TeamMatchupDataSchema = z.object({
   teamId: z.number(),
   totalPoints: z.number(),
-  cumulativeScore: z.object({
-    wins: z.number(),
-    losses: z.number(),
-    ties: z.number().optional(),
+  rosterForCurrentScoringPeriod: z.object({
+    entries: z.array(RosterEntrySchema),
   }).optional(),
 });
 
 const ESPNMatchupSchema = z.object({
   id: z.number(),
   matchupPeriodId: z.number(),
-  home: ESPNTeamSchema,
-  away: ESPNTeamSchema,
-  winner: z.enum(['HOME', 'AWAY', 'UNDECIDED']).optional(),
+  home: TeamMatchupDataSchema,
+  away: TeamMatchupDataSchema,
+  winner: z.enum(['away', 'home', 'undecided']).optional(),
+});
+
+const LeagueSettingsSchema = z.object({
+  name: z.string(),
+  scheduleSettings: z.object({
+    divisions: z.array(z.object({
+      id: z.number().optional(),
+      name: z.string().optional(),
+    })).optional(),
+  }).optional(),
+  acquisitionSettings: z.object({
+    isUsingAcquisitionBudget: z.boolean().optional(),
+    acquisitionBudget: z.number().optional(),
+  }).optional(),
+  rosterSettings: z.object({
+    lineupSlotCounts: z.record(z.string(), z.number()).optional(),
+  }).optional(),
+  scoringSettings: z.object({
+    homeTeamBonus: z.number().optional(),
+  }).optional(),
+});
+
+const ESPNTeamSchema = z.object({
+  id: z.number(),
+  name: z.string().optional(),
+  abbrev: z.string().optional(),
+  location: z.string().optional(),
+  nickname: z.string().optional(),
+  owners: z.array(z.string()).optional(),
+  record: z.object({
+    wins: z.number(),
+    losses: z.number(),
+    ties: z.number(),
+  }).optional(),
+  valuesByStat: z.record(z.string(), z.number()).optional(),
+  points: z.number().optional(),
+  pointsAgainst: z.number().optional(),
+});
+
+const ESPNMemberSchema = z.object({
+  id: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
 });
 
 const ESPNResponseSchema = z.object({
   id: z.number(),
   seasonId: z.number(),
   scoringPeriodId: z.number(),
-  schedule: z.array(ESPNMatchupSchema),
+  settings: LeagueSettingsSchema.optional(),
+  teams: z.array(ESPNTeamSchema).optional().default([]),
+  schedule: z.array(ESPNMatchupSchema).optional().default([]),
+  members: z.array(ESPNMemberSchema).optional().default([]),
   status: z.object({
     currentMatchupPeriod: z.number(),
     latestScoringPeriod: z.number(),
-    finalScoringPeriod: z.number(),
+    finalScoringPeriod: z.number().optional(),
   }),
 });
 
 export type ESPNResponse = z.infer<typeof ESPNResponseSchema>;
 export type ESPNMatchup = z.infer<typeof ESPNMatchupSchema>;
-export type ESPNTeam = z.infer<typeof ESPNTeamSchema>;
+export type TeamMatchupData = z.infer<typeof TeamMatchupDataSchema>;
 
 // Internal data types
 export interface WeeklyScore {
@@ -81,11 +150,10 @@ export class ESPNApiService {
   async fetchWeeklyData(week: number): Promise<ESPNResponse> {
     const url = `${this.baseUrl}/seasons/${this.season}/segments/0/leagues/${this.leagueId}`;
 
-    const params = new URLSearchParams({
-      view: 'mMatchup',
-      view2: 'mScoreboard',
-      scoringPeriodId: week.toString(),
-    });
+    const params = new URLSearchParams();
+    params.append('view', 'mMatchupScore');
+    params.append('view', 'mScoreboard');
+    params.append('scoringPeriodId', week.toString());
 
     const headers: HeadersInit = {
       'Accept': 'application/json',
@@ -209,26 +277,55 @@ export class ESPNApiService {
 
     // Create 6 matchups (12 teams / 2)
     for (let i = 0; i < teamIds.length; i += 2) {
+      const homePoints = Math.floor(Math.random() * 60) + 90; // 90-150 points
+      const awayPoints = Math.floor(Math.random() * 60) + 90; // 90-150 points
+
       schedule.push({
         id: i / 2 + 1,
         matchupPeriodId: week,
         home: {
           teamId: teamIds[i],
-          totalPoints: Math.floor(Math.random() * 60) + 90, // 90-150 points
+          totalPoints: homePoints,
         },
         away: {
           teamId: teamIds[i + 1],
-          totalPoints: Math.floor(Math.random() * 60) + 90, // 90-150 points
+          totalPoints: awayPoints,
         },
-        winner: Math.random() > 0.5 ? 'HOME' : 'AWAY',
+        winner: homePoints > awayPoints ? 'home' : homePoints < awayPoints ? 'away' : 'undecided',
       });
     }
+
+    // Generate mock teams
+    const teams = teamIds.map(id => ({
+      id,
+      name: `Team ${id}`,
+      abbrev: `T${id}`,
+      record: {
+        wins: Math.floor(Math.random() * 10),
+        losses: Math.floor(Math.random() * 10),
+        ties: 0,
+      },
+      points: Math.floor(Math.random() * 1000) + 500,
+      pointsAgainst: Math.floor(Math.random() * 1000) + 500,
+    }));
+
+    // Generate mock members
+    const members = teamIds.map(id => ({
+      id: `member-${id}`,
+      firstName: `Owner`,
+      lastName: `${id}`,
+    }));
 
     return {
       id: 1044648461,
       seasonId: 2025,
       scoringPeriodId: week,
+      settings: {
+        name: 'Mock Fantasy League',
+      },
+      teams,
       schedule,
+      members,
       status: {
         currentMatchupPeriod: week,
         latestScoringPeriod: week,

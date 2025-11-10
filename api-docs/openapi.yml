@@ -1,0 +1,373 @@
+openapi: 3.0.3
+info:
+  title: ESPN Fantasy Football API
+  description: |
+    Unofficial API for ESPN Fantasy Football. This API is not officially documented by ESPN
+    and is subject to change without notice. Used for fetching league data, matchups, scores,
+    and player statistics.
+  version: 3.0.0
+  contact:
+    name: ESPN (Unofficial)
+  x-api-status: unofficial
+
+servers:
+  - url: https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl
+    description: ESPN Fantasy Football API (v3)
+
+security:
+  - cookieAuth: []
+
+paths:
+  /seasons/{year}/segments/0/leagues/{leagueId}:
+    get:
+      summary: Get Fantasy Football League Data
+      description: |
+        Retrieves comprehensive league data including matchups, scores, rosters, teams,
+        and settings for a specific season and week. This is the primary endpoint for
+        fetching weekly scores and matchup information.
+      operationId: getLeagueData
+      tags:
+        - League
+        - Scores
+        - Matchups
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The NFL season year (e.g., 2024)
+          schema:
+            type: integer
+            minimum: 2019
+            example: 2024
+        - name: leagueId
+          in: path
+          required: true
+          description: The unique ESPN league identifier
+          schema:
+            type: integer
+            example: 123456
+        - name: view
+          in: query
+          required: false
+          description: |
+            Specify which data views to include in the response. Can be specified multiple times.
+            Common combinations: mMatchupScore + mScoreboard for weekly scores with rosters.
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - mMatchupScore
+                - mScoreboard
+                - mTeam
+                - mRoster
+                - mSettings
+                - mSchedule
+                - mBoxscore
+                - kona_player_info
+          style: form
+          explode: true
+          examples:
+            weeklyScores:
+              summary: Get weekly scores and matchups
+              value: ["mMatchupScore", "mScoreboard"]
+            teamInfo:
+              summary: Get team information
+              value: ["mTeam"]
+        - name: scoringPeriodId
+          in: query
+          required: false
+          description: The specific week/scoring period to retrieve (1-18 for regular season)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 18
+            example: 5
+      headers:
+        - name: x-fantasy-filter
+          in: header
+          required: false
+          description: |
+            JSON filter object to narrow down results. Most commonly used to filter
+            schedule by specific matchup periods.
+          schema:
+            type: string
+            example: '{"schedule":{"filterMatchupPeriodIds":{"value":[5]}}}'
+      responses:
+        '200':
+          description: Successful response with league data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueResponse'
+              examples:
+                weeklyScores:
+                  summary: Weekly scores response
+                  value:
+                    status:
+                      latestScoringPeriod: 10
+                    settings:
+                      name: "My Fantasy League"
+                    schedule:
+                      - home:
+                          teamId: 1
+                          totalPoints: 125.5
+                        away:
+                          teamId: 2
+                          totalPoints: 98.3
+        '401':
+          description: Unauthorized - Invalid or missing authentication cookies
+        '404':
+          description: League not found
+      security:
+        - cookieAuth: []
+        - {} # Public leagues don't require authentication
+
+  /leagueHistory/{leagueId}:
+    get:
+      summary: Get Historical League Data (Pre-2019)
+      description: |
+        Retrieves league data for seasons 2018 and earlier. Uses a different
+        endpoint structure than modern seasons.
+      operationId: getLeagueHistory
+      tags:
+        - League
+        - Historical
+      parameters:
+        - name: leagueId
+          in: path
+          required: true
+          description: The unique ESPN league identifier
+          schema:
+            type: integer
+        - name: seasonId
+          in: query
+          required: true
+          description: The season year (2018 or earlier)
+          schema:
+            type: integer
+            maximum: 2018
+            example: 2018
+      responses:
+        '200':
+          description: Successful response with historical league data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeagueResponse'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: swid; espn_s2
+      description: |
+        ESPN session cookies required for private leagues. Two cookies needed:
+        - swid: ESPN SWID cookie (format: {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX})
+        - espn_s2: ESPN S2 session token (long alphanumeric string)
+        
+        Obtain these by logging into ESPN Fantasy Football and extracting cookies
+        from browser DevTools.
+
+  schemas:
+    LeagueResponse:
+      type: object
+      properties:
+        status:
+          type: object
+          properties:
+            latestScoringPeriod:
+              type: integer
+              description: The current/latest NFL week
+              example: 10
+        settings:
+          $ref: '#/components/schemas/LeagueSettings'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+        schedule:
+          type: array
+          items:
+            $ref: '#/components/schemas/Matchup'
+          description: List of matchups/games for the specified week
+
+    LeagueSettings:
+      type: object
+      properties:
+        name:
+          type: string
+          description: League name
+          example: "My Fantasy League"
+        scheduleSettings:
+          type: object
+          properties:
+            divisions:
+              type: array
+              items:
+                type: object
+        acquisitionSettings:
+          type: object
+          properties:
+            isUsingAcquisitionBudget:
+              type: boolean
+            acquisitionBudget:
+              type: integer
+        rosterSettings:
+          type: object
+          properties:
+            lineupSlotCounts:
+              type: object
+              additionalProperties:
+                type: integer
+        scoringSettings:
+          type: object
+          properties:
+            homeTeamBonus:
+              type: number
+
+    Member:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Member/manager unique identifier
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Team unique identifier
+        name:
+          type: string
+          description: Team name
+        abbrev:
+          type: string
+          description: Team abbreviation
+        record:
+          type: object
+          properties:
+            wins:
+              type: integer
+            losses:
+              type: integer
+            ties:
+              type: integer
+        points:
+          type: number
+          description: Total points scored
+        pointsAgainst:
+          type: number
+          description: Total points against
+
+    Matchup:
+      type: object
+      properties:
+        home:
+          $ref: '#/components/schemas/TeamMatchupData'
+        away:
+          $ref: '#/components/schemas/TeamMatchupData'
+        matchupPeriodId:
+          type: integer
+          description: The matchup period (week) for this game
+
+    TeamMatchupData:
+      type: object
+      properties:
+        teamId:
+          type: integer
+          description: Team ID
+        totalPoints:
+          type: number
+          description: Total points scored in this matchup
+          example: 125.5
+        rosterForCurrentScoringPeriod:
+          type: object
+          properties:
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/RosterEntry'
+
+    RosterEntry:
+      type: object
+      properties:
+        playerId:
+          type: integer
+          description: Unique player identifier
+        lineupSlotId:
+          type: integer
+          description: The roster slot (0=QB, 2=RB, 4=WR, etc., 20=Bench)
+        playerPoolEntry:
+          type: object
+          properties:
+            player:
+              $ref: '#/components/schemas/Player'
+
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique player identifier
+        firstName:
+          type: string
+          example: "Patrick"
+        lastName:
+          type: string
+          example: "Mahomes"
+        fullName:
+          type: string
+          example: "Patrick Mahomes"
+        jersey:
+          type: string
+          description: Jersey number
+        proTeamId:
+          type: integer
+          description: NFL team ID
+        defaultPositionId:
+          type: integer
+          description: Primary position (1=QB, 2=RB, 3=WR, 4=TE, 5=K, 16=DST)
+        eligibleSlots:
+          type: array
+          items:
+            type: integer
+          description: Roster slots this player is eligible for
+        injuryStatus:
+          type: string
+          enum: [ACTIVE, QUESTIONABLE, DOUBTFUL, OUT, INJURY_RESERVE]
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              scoringPeriodId:
+                type: integer
+              appliedTotal:
+                type: number
+                description: Actual points scored
+              projectedTotal:
+                type: number
+                description: Projected points
+
+tags:
+  - name: League
+    description: League information and data
+  - name: Scores
+    description: Weekly scores and matchup results
+  - name: Matchups
+    description: Matchup and schedule information
+  - name: Historical
+    description: Historical data for past seasons
