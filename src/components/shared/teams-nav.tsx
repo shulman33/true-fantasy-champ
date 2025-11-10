@@ -82,7 +82,7 @@ export function TeamsNav() {
             >
               <div className="flex flex-col gap-0.5">
                 <span className="font-semibold text-sm">{team.teamName}</span>
-                <span className="text-xs text-muted-foreground">{team.owner}</span>
+                <span className="text-xs text-muted-foreground">{team.abbrev}</span>
               </div>
             </Link>
           </DropdownMenuItem>

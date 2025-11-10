@@ -20,6 +20,7 @@ interface TeamStanding {
   teamId: string;
   teamName: string;
   owner: string;
+  abbrev: string;
   wins: number;
   losses: number;
   winPercentage: number;
@@ -160,7 +161,7 @@ export function RecordComparisonTable({
                         <span className="font-bold text-white group-hover:text-retro-yellow transition-colors">
                           {team.teamName}
                         </span>
-                        <span className="text-xs text-gray-400 font-mono">{team.owner}</span>
+                        <span className="text-xs text-retro-green font-mono">{team.abbrev}</span>
                       </Link>
                     </TableCell>
                     <TableCell className="text-center">

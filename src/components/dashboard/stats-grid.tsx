@@ -6,6 +6,7 @@ interface TeamStat {
   teamId: string;
   teamName: string;
   owner?: string;
+  abbrev?: string;
 }
 
 interface LuckyStat extends TeamStat {
@@ -43,7 +44,7 @@ export function StatsGrid({
       <StatsCard
         title="Luckiest Team"
         value={luckiest ? luckiest.teamName : '---'}
-        subtitle={luckiest ? luckiest.owner : undefined}
+        subtitle={luckiest ? luckiest.abbrev : undefined}
         description={
           luckiest
             ? `Schedule luck: +${luckiest.differential.toFixed(1)} wins vs true record`
@@ -58,7 +59,7 @@ export function StatsGrid({
       <StatsCard
         title="Unluckiest Team"
         value={unluckiest ? unluckiest.teamName : '---'}
-        subtitle={unluckiest ? unluckiest.owner : undefined}
+        subtitle={unluckiest ? unluckiest.abbrev : undefined}
         description={
           unluckiest
             ? `Schedule curse: ${unluckiest.differential.toFixed(1)} wins vs true record`
@@ -73,7 +74,7 @@ export function StatsGrid({
       <StatsCard
         title="Most Consistent"
         value={mostConsistent ? mostConsistent.teamName : '---'}
-        subtitle={mostConsistent ? mostConsistent.owner : undefined}
+        subtitle={mostConsistent ? mostConsistent.abbrev : undefined}
         description={
           mostConsistent
             ? `Lowest variance: ±${mostConsistent.consistency.toFixed(1)} pts/week`
@@ -88,7 +89,7 @@ export function StatsGrid({
       <StatsCard
         title="Highest Scoring"
         value={highestScoring ? highestScoring.teamName : '---'}
-        subtitle={highestScoring ? highestScoring.owner : undefined}
+        subtitle={highestScoring ? highestScoring.abbrev : undefined}
         description={
           highestScoring
             ? `Average: ${highestScoring.averagePoints.toFixed(1)} pts/week`

@@ -141,11 +141,13 @@ export async function GET(request: NextRequest) {
         const teamMeta = teamMetadata?.[luckiest.teamId] || {
           name: `Team ${luckiest.teamId}`,
           owner: `Owner ${luckiest.teamId}`,
+          abbrev: `T${luckiest.teamId}`,
         };
         luckiestStat = {
           teamId: luckiest.teamId,
           teamName: teamMeta.name,
           owner: teamMeta.owner,
+          abbrev: teamMeta.abbrev,
           differential: luckiest.differential,
         };
       }
@@ -154,11 +156,13 @@ export async function GET(request: NextRequest) {
         const teamMeta = teamMetadata?.[unluckiest.teamId] || {
           name: `Team ${unluckiest.teamId}`,
           owner: `Owner ${unluckiest.teamId}`,
+          abbrev: `T${unluckiest.teamId}`,
         };
         unluckiestStat = {
           teamId: unluckiest.teamId,
           teamName: teamMeta.name,
           owner: teamMeta.owner,
+          abbrev: teamMeta.abbrev,
           differential: unluckiest.differential,
         };
       }
@@ -196,12 +200,14 @@ export async function GET(request: NextRequest) {
           teamId: mostConsistentTeam.teamId,
           teamName: mostConsistentTeam.teamName,
           owner: mostConsistentTeam.owner,
+          abbrev: mostConsistentTeam.abbrev,
           consistency: mostConsistentTeam.consistency,
         },
         highestScoring: {
           teamId: highestScoringTeam.teamId,
           teamName: highestScoringTeam.teamName,
           owner: highestScoringTeam.owner,
+          abbrev: highestScoringTeam.abbrev,
           averagePoints: highestScoringTeam.averagePoints,
         },
       },

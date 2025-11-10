@@ -80,7 +80,7 @@ export function TeamsNavMobile({ onNavigate }: TeamsNavMobileProps) {
               className="text-sm hover:text-primary transition-colors py-2 px-4 border-2 border-primary/10 hover:border-primary hover:bg-primary/10 min-h-11 flex flex-col justify-center"
             >
               <span className="font-semibold">{team.teamName}</span>
-              <span className="text-xs text-muted-foreground">{team.owner}</span>
+              <span className="text-xs text-muted-foreground">{team.abbrev}</span>
             </Link>
           ))}
         </div>
