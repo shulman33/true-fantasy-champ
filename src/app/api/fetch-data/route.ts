@@ -2,23 +2,53 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { espnApi } from '@/services/espn-api';
 import { redis } from '@/lib/redis';
+import { updateAllData } from '@/services/data-updater';
 
 // Request body schema
 const FetchDataRequestSchema = z.object({
   week: z.number().min(1).max(18).optional(),
   forceRefresh: z.boolean().optional().default(false),
+  fullRefresh: z.boolean().optional().default(false),
 });
 
 /**
  * POST /api/fetch-data
  * Manually trigger data refresh from ESPN API
- * Body: { week?: number, forceRefresh?: boolean }
+ * Body: { week?: number, forceRefresh?: boolean, fullRefresh?: boolean }
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { week, forceRefresh } = FetchDataRequestSchema.parse(body);
+    const { week, forceRefresh, fullRefresh } = FetchDataRequestSchema.parse(body);
 
+    // If fullRefresh is requested, use the comprehensive update process
+    if (fullRefresh) {
+      console.log('🔄 Full refresh requested - updating all data...');
+      const result = await updateAllData({
+        forceRefresh,
+        onProgress: (message) => {
+          console.log(message);
+        },
+      });
+
+      return NextResponse.json(
+        {
+          message: result.success
+            ? 'Full data refresh completed successfully'
+            : 'Full data refresh completed with errors',
+          success: result.success,
+          weeksProcessed: result.weeksProcessed,
+          teamsUpdated: result.teamsUpdated,
+          lastUpdate: result.lastUpdate,
+          duration: result.duration,
+          errors: result.errors,
+          refreshed: true,
+        },
+        { status: result.success ? 200 : 207 }
+      );
+    }
+
+    // Otherwise, perform single-week refresh (existing behavior)
     const season = parseInt(process.env.ESPN_SEASON || '2025');
     let targetWeek = week;
 
