@@ -30,7 +30,7 @@ export function ScoreboardHeader({
             SEASON {seasonYear}
           </Badge>
           {lastUpdated && (
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-xs sm:text-sm text-muted-foreground">
               Last Update:{" "}
               {typeof lastUpdated === "string"
                 ? lastUpdated

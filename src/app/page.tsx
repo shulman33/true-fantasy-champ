@@ -105,9 +105,9 @@ export default function Home() {
         {/* Status Card */}
         <Card className="retro-card bg-primary/10">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <CardTitle className="text-lg text-retro">PROJECT STATUS</CardTitle>
-              <Badge variant="outline" className="border-primary text-primary">
+              <Badge variant="outline" className="border-primary text-primary text-xs sm:text-sm whitespace-nowrap">
                 IN DEVELOPMENT
               </Badge>
             </div>
@@ -132,7 +132,7 @@ export default function Home() {
 
         {/* CTA */}
         <div className="text-center py-6 md:py-8">
-          <Button className="retro-button w-full max-w-md mx-auto text-base sm:text-lg px-4 py-3 sm:px-8 sm:py-6" size="lg">
+          <Button className="retro-button w-full max-w-md mx-auto text-sm sm:text-base md:text-lg px-4 py-3 sm:px-6 md:px-8 sm:py-4 md:py-6 whitespace-normal leading-tight" size="lg">
             VIEW STANDINGS (COMING SOON)
           </Button>
         </div>
