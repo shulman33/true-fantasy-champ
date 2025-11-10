@@ -16,20 +16,47 @@ function RetroTooltipProvider({
   )
 }
 
+const TooltipContext = React.createContext<{
+  open: boolean
+  setOpen: (open: boolean) => void
+}>({
+  open: false,
+  setOpen: () => {},
+})
+
 function RetroTooltip({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+  const [open, setOpen] = React.useState(false)
+
   return (
-    <RetroTooltipProvider>
-      <TooltipPrimitive.Root {...props} />
-    </RetroTooltipProvider>
+    <TooltipContext.Provider value={{ open, setOpen }}>
+      <RetroTooltipProvider>
+        <TooltipPrimitive.Root open={open} onOpenChange={setOpen} {...props} />
+      </RetroTooltipProvider>
+    </TooltipContext.Provider>
   )
 }
 
 function RetroTooltipTrigger({
+  onClick,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger {...props} />
+  const { open, setOpen } = React.useContext(TooltipContext)
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Toggle tooltip on click for mobile support
+    setOpen(!open)
+    // Call the original onClick if provided
+    onClick?.(e)
+  }
+
+  return (
+    <TooltipPrimitive.Trigger
+      onClick={handleClick}
+      {...props}
+    />
+  )
 }
 
 function RetroTooltipContent({
