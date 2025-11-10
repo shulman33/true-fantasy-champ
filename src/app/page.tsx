@@ -13,18 +13,18 @@ export default function Home() {
         seasonYear={2025}
       />
 
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Welcome Section */}
         <Card className="retro-card">
-          <CardHeader>
-            <CardTitle className="text-2xl text-primary text-retro">
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-xl md:text-2xl text-primary text-retro">
               WELCOME TO THE TRUTH
             </CardTitle>
-            <CardDescription className="text-sm">
+            <CardDescription className="text-xs md:text-sm">
               Stop letting luck decide your champion
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
             <p className="text-sm leading-relaxed">
               Your fantasy football league has a dirty little secret: the
               champion might just be the luckiest person in your league, not the
@@ -40,7 +40,7 @@ export default function Home() {
         </Card>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
           <Card className="retro-card">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -131,8 +131,8 @@ export default function Home() {
         </Card>
 
         {/* CTA */}
-        <div className="text-center py-8">
-          <Button className="retro-button text-lg px-8 py-6" size="lg">
+        <div className="text-center py-6 md:py-8">
+          <Button className="retro-button w-full max-w-md mx-auto text-base sm:text-lg px-4 py-3 sm:px-8 sm:py-6" size="lg">
             VIEW STANDINGS (COMING SOON)
           </Button>
         </div>

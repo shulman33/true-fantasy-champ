@@ -132,11 +132,11 @@
 /* Retro Bowl / 8-bit aesthetic custom classes */
 @layer utilities {
   .retro-card {
-    @apply bg-card border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)];
+    @apply bg-card border-2 md:border-4 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)];
   }
 
   .retro-button {
-    @apply border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] transition-all;
+    @apply border-2 md:border-4 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] active:translate-x-1 active:translate-y-1 active:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.8)] md:active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] transition-all;
   }
 
   .pixel-border {
