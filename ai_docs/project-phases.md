@@ -163,40 +163,40 @@ Build a Next.js 15 application that calculates what each fantasy football team's
 ## Phase 5: Main Dashboard
 
 ### Task 5.1: Dashboard Layout
-- [ ] Create dashboard page (`app/page.tsx`)
-- [ ] Implement grid layout for sections
-- [ ] Add responsive breakpoints
-- [ ] Create dashboard navigation tabs
+- [x] Create dashboard page (`app/page.tsx`)
+- [x] Implement grid layout for sections
+- [x] Add responsive breakpoints
+- [x] Create dashboard navigation tabs
 
 ### Task 5.2: Current Standings Component
-- [ ] Create `TrueStandingsTable` component
-- [ ] Display teams with true W-L records
-- [ ] Show win percentage
-- [ ] Add ranking/position column
-- [ ] Implement sorting functionality
-- [ ] Style with retro aesthetic
+- [x] Create `TrueStandingsTable` component
+- [x] Display teams with true W-L records
+- [x] Show win percentage
+- [x] Add ranking/position column
+- [x] Implement sorting functionality
+- [x] Style with retro aesthetic
 
 ### Task 5.3: Comparison View Component
-- [ ] Create `RecordComparisonTable` component
-- [ ] Show actual record vs true record side-by-side
-- [ ] Calculate and display record differential
-- [ ] Add visual indicators (up/down arrows)
-- [ ] Highlight biggest differences
+- [x] Create `RecordComparisonTable` component
+- [x] Show actual record vs true record side-by-side
+- [x] Calculate and display record differential
+- [x] Add visual indicators (up/down arrows)
+- [x] Highlight biggest differences
 
 ### Task 5.4: Stats Cards Component
-- [ ] Create `StatsCard` component (reusable)
-- [ ] Display "Luckiest Team" card
-- [ ] Display "Unluckiest Team" card
-- [ ] Display "Most Consistent" card
-- [ ] Display "Highest Average Score" card
-- [ ] Style as retro game stats displays
+- [x] Create `StatsCard` component (reusable)
+- [x] Display "Luckiest Team" card
+- [x] Display "Unluckiest Team" card
+- [x] Display "Most Consistent" card
+- [x] Display "Highest Average Score" card
+- [x] Style as retro game stats displays
 
 ### Task 5.5: Data Fetching & State Management
-- [ ] Implement data fetching on dashboard load
-- [ ] Add refresh functionality
-- [ ] Show last update timestamp
-- [ ] Handle loading states
-- [ ] Handle error states
+- [x] Implement data fetching on dashboard load
+- [x] Add refresh functionality
+- [x] Show last update timestamp
+- [x] Handle loading states
+- [x] Handle error states
 
 ---
 

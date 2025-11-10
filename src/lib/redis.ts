@@ -38,7 +38,7 @@ export async function setWeeklyScores(
 ): Promise<void> {
   const client = getRedisClient();
   const key = REDIS_KEYS.WEEKLY_SCORES(season.toString(), week);
-  await client.set(key, JSON.stringify(scores));
+  await client.set(key, scores);
 }
 
 export async function getWeeklyScores(
@@ -47,8 +47,7 @@ export async function getWeeklyScores(
 ): Promise<Record<string, number> | null> {
   const client = getRedisClient();
   const key = REDIS_KEYS.WEEKLY_SCORES(season.toString(), week);
-  const data = await client.get<string>(key);
-  return data ? JSON.parse(data) : null;
+  return await client.get<Record<string, number>>(key);
 }
 
 // True Records Operations
@@ -59,7 +58,7 @@ export async function setTrueRecord(
 ): Promise<void> {
   const client = getRedisClient();
   const key = REDIS_KEYS.TRUE_RECORDS(season.toString(), teamId.toString());
-  await client.set(key, JSON.stringify(record));
+  await client.set(key, record);
 }
 
 export async function getTrueRecord(
@@ -68,8 +67,7 @@ export async function getTrueRecord(
 ): Promise<TrueRecord | null> {
   const client = getRedisClient();
   const key = REDIS_KEYS.TRUE_RECORDS(season.toString(), teamId.toString());
-  const data = await client.get<string>(key);
-  return data ? JSON.parse(data) : null;
+  return await client.get<TrueRecord>(key);
 }
 
 export async function getAllTrueRecords(season: number | string): Promise<Record<string, TrueRecord>> {
@@ -85,9 +83,9 @@ export async function getAllTrueRecords(season: number | string): Promise<Record
   // All GET commands will be batched into a single HTTP request
   const records = await Promise.all(
     keys.map(async (key) => {
-      const data = await client.get<string>(key);
+      const data = await client.get<TrueRecord>(key);
       const teamId = key.split(':')[2]; // Extract team ID from key
-      return { teamId, data: data ? JSON.parse(data) : null };
+      return { teamId, data };
     })
   );
 
@@ -109,7 +107,7 @@ export async function setActualStandings(
 ): Promise<void> {
   const client = getRedisClient();
   const key = REDIS_KEYS.ACTUAL_STANDINGS(season);
-  await client.set(key, JSON.stringify(standings));
+  await client.set(key, standings);
 }
 
 export async function getActualStandings(
@@ -117,8 +115,7 @@ export async function getActualStandings(
 ): Promise<TeamStanding[] | null> {
   const client = getRedisClient();
   const key = REDIS_KEYS.ACTUAL_STANDINGS(season);
-  const data = await client.get<string>(key);
-  return data ? JSON.parse(data) : null;
+  return await client.get<TeamStanding[]>(key);
 }
 
 // Team Metadata Operations
@@ -128,7 +125,7 @@ export async function setTeamMetadata(
 ): Promise<void> {
   const client = getRedisClient();
   const key = REDIS_KEYS.TEAM_METADATA(leagueId);
-  await client.set(key, JSON.stringify(teams));
+  await client.set(key, teams);
 }
 
 export async function getTeamMetadata(
@@ -136,8 +133,7 @@ export async function getTeamMetadata(
 ): Promise<Record<string, Partial<Team>> | null> {
   const client = getRedisClient();
   const key = REDIS_KEYS.TEAM_METADATA(leagueId);
-  const data = await client.get<string>(key);
-  return data ? JSON.parse(data) : null;
+  return await client.get<Record<string, Partial<Team>>>(key);
 }
 
 // Last Update Timestamp
@@ -168,7 +164,7 @@ export async function setAllWeeklyScores(
 
   weeklyData.forEach(({ week, scores }) => {
     const key = REDIS_KEYS.WEEKLY_SCORES(season, week);
-    pipeline.set(key, JSON.stringify(scores));
+    pipeline.set(key, scores);
   });
 
   await pipeline.exec();

@@ -267,6 +267,74 @@ export class ESPNApiService {
   }
 
   /**
+   * Parse team metadata from ESPN API response
+   * @param response - ESPN API response
+   * @returns Object mapping team IDs to team metadata
+   */
+  parseTeamMetadata(response: ESPNResponse): Record<string, { name: string; owner: string; abbrev: string }> {
+    const teamMetadata: Record<string, { name: string; owner: string; abbrev: string }> = {};
+
+    if (!response.teams) {
+      return teamMetadata;
+    }
+
+    // Create a map of member IDs to names
+    const memberMap = new Map<string, string>();
+    for (const member of response.members) {
+      const fullName = member.firstName && member.lastName
+        ? `${member.firstName} ${member.lastName}`
+        : member.firstName || member.lastName || `Owner ${member.id}`;
+      memberMap.set(member.id, fullName);
+    }
+
+    // Extract team metadata
+    for (const team of response.teams) {
+      const teamName = team.name || team.location && team.nickname
+        ? `${team.location} ${team.nickname}`
+        : `Team ${team.id}`;
+
+      // Get owner name from first owner ID
+      const ownerId = team.owners?.[0];
+      const ownerName = ownerId ? memberMap.get(ownerId) || `Owner ${ownerId}` : `Owner ${team.id}`;
+
+      teamMetadata[team.id.toString()] = {
+        name: teamName,
+        owner: ownerName,
+        abbrev: team.abbrev || `T${team.id}`,
+      };
+    }
+
+    return teamMetadata;
+  }
+
+  /**
+   * Parse actual standings from ESPN API response
+   * @param response - ESPN API response
+   * @returns Array of team standings with actual records
+   */
+  parseActualStandings(response: ESPNResponse): Array<{
+    teamId: string;
+    wins: number;
+    losses: number;
+    ties: number;
+    points: number;
+    pointsAgainst: number;
+  }> {
+    if (!response.teams) {
+      return [];
+    }
+
+    return response.teams.map(team => ({
+      teamId: team.id.toString(),
+      wins: team.record?.wins ?? 0,
+      losses: team.record?.losses ?? 0,
+      ties: team.record?.ties ?? 0,
+      points: team.points ?? 0,
+      pointsAgainst: team.pointsAgainst ?? 0,
+    }));
+  }
+
+  /**
    * Generate mock data for development/testing
    * @param week - The week number
    * @returns Mock ESPN response
@@ -295,11 +363,52 @@ export class ESPNApiService {
       });
     }
 
+    // Mock team names (retro football themed)
+    const teamNames = [
+      { location: 'Pixel', nickname: 'Panthers', abbrev: 'PIX' },
+      { location: '8-Bit', nickname: 'Bears', abbrev: '8BB' },
+      { location: 'Retro', nickname: 'Rockets', abbrev: 'RET' },
+      { location: 'Classic', nickname: 'Crusaders', abbrev: 'CLS' },
+      { location: 'Arcade', nickname: 'Aces', abbrev: 'ARC' },
+      { location: 'Digital', nickname: 'Dragons', abbrev: 'DIG' },
+      { location: 'Vintage', nickname: 'Vikings', abbrev: 'VIN' },
+      { location: 'Legacy', nickname: 'Lions', abbrev: 'LEG' },
+      { location: 'Throwback', nickname: 'Titans', abbrev: 'THR' },
+      { location: 'Old School', nickname: 'Owls', abbrev: 'OLD' },
+      { location: 'Timeless', nickname: 'Tigers', abbrev: 'TIM' },
+      { location: 'Nostalgic', nickname: 'Knights', abbrev: 'NOS' },
+    ];
+
+    const ownerNames = [
+      { firstName: 'Sam', lastName: 'Smith' },
+      { firstName: 'Jordan', lastName: 'Johnson' },
+      { firstName: 'Taylor', lastName: 'Williams' },
+      { firstName: 'Morgan', lastName: 'Brown' },
+      { firstName: 'Casey', lastName: 'Davis' },
+      { firstName: 'Riley', lastName: 'Miller' },
+      { firstName: 'Alex', lastName: 'Wilson' },
+      { firstName: 'Jamie', lastName: 'Moore' },
+      { firstName: 'Drew', lastName: 'Taylor' },
+      { firstName: 'Blake', lastName: 'Anderson' },
+      { firstName: 'Quinn', lastName: 'Thomas' },
+      { firstName: 'Avery', lastName: 'Jackson' },
+    ];
+
+    // Generate mock members
+    const members = teamIds.map((id, index) => ({
+      id: `member-${id}`,
+      firstName: ownerNames[index].firstName,
+      lastName: ownerNames[index].lastName,
+    }));
+
     // Generate mock teams
-    const teams = teamIds.map(id => ({
+    const teams = teamIds.map((id, index) => ({
       id,
-      name: `Team ${id}`,
-      abbrev: `T${id}`,
+      name: `${teamNames[index].location} ${teamNames[index].nickname}`,
+      abbrev: teamNames[index].abbrev,
+      location: teamNames[index].location,
+      nickname: teamNames[index].nickname,
+      owners: [`member-${id}`],
       record: {
         wins: Math.floor(Math.random() * 10),
         losses: Math.floor(Math.random() * 10),
@@ -307,13 +416,6 @@ export class ESPNApiService {
       },
       points: Math.floor(Math.random() * 1000) + 500,
       pointsAgainst: Math.floor(Math.random() * 1000) + 500,
-    }));
-
-    // Generate mock members
-    const members = teamIds.map(id => ({
-      id: `member-${id}`,
-      firstName: `Owner`,
-      lastName: `${id}`,
     }));
 
     return {
