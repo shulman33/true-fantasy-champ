@@ -7,16 +7,6 @@ import { LoadingTable, LoadingStats, ErrorMessage } from '@/components/shared';
 import { RefreshCwIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface TeamStanding {
-  rank: number;
-  teamId: string;
-  teamName: string;
-  owner: string;
-  wins: number;
-  losses: number;
-  winPercentage: number;
-}
-
 interface DashboardData {
   season: number;
   standings: Array<{
@@ -124,8 +114,8 @@ export function DashboardClient() {
   return (
     <div className="space-y-8">
       {/* Refresh Button */}
-      <div className="flex justify-between items-center">
-        <div className="text-sm text-gray-400 font-mono">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
+        <div className="text-xs sm:text-sm text-gray-400 font-mono wrap-break-word">
           {data.lastUpdate ? (
             <>
               Last updated: {new Date(data.lastUpdate).toLocaleString()}
@@ -138,7 +128,7 @@ export function DashboardClient() {
           onClick={handleRefresh}
           variant="outline"
           size="sm"
-          className="retro-button"
+          className="retro-button w-full sm:w-auto shrink-0"
           disabled={refreshing}
         >
           <RefreshCwIcon className={cn('w-4 h-4 mr-2', refreshing && 'animate-spin')} />

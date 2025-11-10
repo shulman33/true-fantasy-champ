@@ -66,9 +66,9 @@ export function StatsCard({
       </div>
 
       <CardHeader className="pb-3 relative">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-sm font-press-start uppercase tracking-wider text-gray-300">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+            <CardTitle className="text-[10px] sm:text-sm font-press-start uppercase tracking-wider text-gray-300 truncate">
               {title}
             </CardTitle>
             {tooltipContent && (
@@ -76,11 +76,12 @@ export function StatsCard({
                 <RetroTooltipTrigger asChild>
                   <button
                     className={cn(
-                      'group inline-flex items-center justify-center',
+                      'group inline-flex items-center justify-center shrink-0',
                       'w-5 h-5 sm:w-6 sm:h-6',
                       'border-2 rounded-sm',
                       'transition-all duration-200',
                       'hover:scale-110 active:scale-95',
+                      'touch-manipulation',
                       styles.border,
                       'bg-black/60 hover:bg-black/80',
                       styles.glow.replace('shadow-[0_0_10px', 'hover:shadow-[0_0_15px')
@@ -107,7 +108,7 @@ export function StatsCard({
             )}
           </div>
           {icon && (
-            <div className={cn('text-xl', styles.badge.split(' ')[1])}>
+            <div className={cn('text-lg sm:text-xl shrink-0', styles.badge.split(' ')[1])}>
               {icon}
             </div>
           )}
@@ -116,10 +117,10 @@ export function StatsCard({
 
       <CardContent className="relative">
         <div className="space-y-2">
-          <div className="flex items-baseline gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1.5 sm:gap-2">
             <span
               className={cn(
-                'text-3xl font-press-start font-bold',
+                'text-xl sm:text-2xl md:text-3xl font-press-start font-bold text-wrap wrap-break-word',
                 styles.badge.split(' ')[1]
               )}
             >
@@ -129,7 +130,7 @@ export function StatsCard({
               <Badge
                 variant="outline"
                 className={cn(
-                  'font-press-start text-[10px] px-2 py-0.5',
+                  'font-press-start text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 truncate max-w-full',
                   styles.badge
                 )}
               >
@@ -139,7 +140,7 @@ export function StatsCard({
           </div>
 
           {description && (
-            <p className="text-xs text-gray-400 font-mono leading-relaxed">
+            <p className="text-[10px] sm:text-xs text-gray-400 font-mono leading-relaxed">
               {description}
             </p>
           )}
