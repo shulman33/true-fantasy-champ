@@ -104,7 +104,7 @@ export function RecordComparisonTable({
                         </button>
                       </RetroTooltipTrigger>
                       <RetroTooltipContent side="top" align="center">
-                        Win differential shows how many more (or fewer) wins a team has in their actual record compared to their true record. Positive numbers (green) mean lucky schedule, negative numbers (red) mean unlucky schedule. Calculated as: Actual Wins - True Wins.
+                        Win differential shows how many more (or fewer) wins a team has compared to their expected record. Expected record is calculated using true win percentage applied to actual games played. Positive numbers (green) mean lucky schedule, negative numbers (red) mean unlucky schedule.
                       </RetroTooltipContent>
                     </RetroTooltip>
                   </div>
@@ -120,17 +120,19 @@ export function RecordComparisonTable({
                   ? actualStandings.find((t) => t.teamId === team.teamId)
                   : null;
 
-                const winDiff = actualTeam ? actualTeam.wins - team.wins : 0;
+                // Calculate expected record based on true win percentage
+                // This normalizes the comparison: what SHOULD the record be given true performance?
+                const actualGamesPlayed = actualTeam ? actualTeam.wins + actualTeam.losses : 0;
+                const expectedWins = actualTeam ? Math.round(team.winPercentage * actualGamesPlayed) : 0;
+                const winDiff = actualTeam ? actualTeam.wins - expectedWins : 0;
+
                 const pctDiff = actualTeam
                   ? (actualTeam.winPercentage - team.winPercentage) * 100
                   : 0;
 
-                const luckStatus =
-                  Math.abs(winDiff) < 1
-                    ? 'Even'
-                    : winDiff > 0
-                    ? 'Lucky'
-                    : 'Unlucky';
+                // Only show luck badge if differential is significant (±2 games or more)
+                const showLuckBadge = Math.abs(winDiff) >= 2;
+                const luckStatus = winDiff > 0 ? 'Lucky' : 'Unlucky';
 
                 return (
                   <TableRow
@@ -199,24 +201,19 @@ export function RecordComparisonTable({
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      {hasActualData ? (
+                      {hasActualData && showLuckBadge ? (
                         <Badge
-                          variant={
-                            luckStatus === 'Lucky'
-                              ? 'default'
-                              : luckStatus === 'Unlucky'
-                              ? 'destructive'
-                              : 'outline'
-                          }
+                          variant={luckStatus === 'Lucky' ? 'default' : 'destructive'}
                           className={cn(
                             'font-press-start text-[10px] px-2 py-1',
                             luckStatus === 'Lucky' && 'bg-green-500/20 text-green-500 border-green-500',
-                            luckStatus === 'Unlucky' && 'bg-red-500/20 text-red-500 border-red-500',
-                            luckStatus === 'Even' && 'bg-gray-500/20 text-gray-400 border-gray-500'
+                            luckStatus === 'Unlucky' && 'bg-red-500/20 text-red-500 border-red-500'
                           )}
                         >
                           {luckStatus}
                         </Badge>
+                      ) : hasActualData ? (
+                        <span className="text-gray-400 text-xs font-mono">-</span>
                       ) : (
                         <span className="text-gray-600 text-xs font-mono">---</span>
                       )}
