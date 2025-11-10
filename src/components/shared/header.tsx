@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileNav } from "./mobile-nav";
+import { TeamsNav } from "./teams-nav";
 
 export function Header() {
   return (
@@ -20,6 +21,7 @@ export function Header() {
             >
               STANDINGS
             </Link>
+            <TeamsNav />
             <Link
               href="/weeks"
               className="text-sm hover:text-primary transition-colors py-3"

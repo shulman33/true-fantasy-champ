@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { TeamsNavMobile } from "./teams-nav-mobile";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -45,7 +46,7 @@ export function MobileNav() {
           </svg>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] bg-card border-l-4 border-primary">
+      <SheetContent side="right" className="w-[280px] bg-card border-l-4 border-primary overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-primary text-retro text-left">
             MENU
@@ -60,11 +61,12 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="text-sm hover:text-primary transition-colors py-3 px-4 border-2 border-primary/20 hover:border-primary hover:bg-primary/10 min-h-[44px] flex items-center"
+              className="text-sm hover:text-primary transition-colors py-3 px-4 border-2 border-primary/20 hover:border-primary hover:bg-primary/10 min-h-11 flex items-center"
             >
               {item.label}
             </Link>
           ))}
+          <TeamsNavMobile onNavigate={() => setOpen(false)} />
         </nav>
       </SheetContent>
     </Sheet>
