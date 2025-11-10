@@ -40,11 +40,6 @@ async function populateESPNData() {
           const teamMetadata = espnService.parseTeamMetadata(response);
           await redis.setTeamMetadata(leagueId, teamMetadata);
           console.log(`  ✓ Team metadata stored for ${Object.keys(teamMetadata).length} teams`);
-
-          // Also store actual standings
-          const actualStandings = espnService.parseActualStandings(response);
-          await redis.setActualStandings(season, actualStandings);
-          console.log(`  ✓ Actual standings stored for ${actualStandings.length} teams`);
         }
 
         // Add a small delay between requests to be respectful to ESPN API
