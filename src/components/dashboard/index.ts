@@ -3,3 +3,7 @@ export { StatsGrid } from './stats-grid';
 export { TrueStandingsTable } from './true-standings-table';
 export { RecordComparisonTable } from './record-comparison-table';
 export { DashboardClient } from './dashboard-client';
+export { TeamStandingsCard } from './team-standings-card';
+export { TeamStandingsGrid } from './team-standings-grid';
+export { RecordComparisonCard } from './record-comparison-card';
+export { RecordComparisonGrid } from './record-comparison-grid';

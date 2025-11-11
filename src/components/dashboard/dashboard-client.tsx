@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TrueStandingsTable, RecordComparisonTable, StatsGrid } from '@/components/dashboard';
+import {
+  TrueStandingsTable,
+  RecordComparisonTable,
+  StatsGrid,
+  TeamStandingsGrid,
+  RecordComparisonGrid
+} from '@/components/dashboard';
 import { Button } from '@/components/ui/button';
 import { LoadingTable, LoadingStats, ErrorMessage } from '@/components/shared';
 import { RefreshCwIcon } from 'lucide-react';
@@ -202,14 +208,27 @@ export function DashboardClient() {
         highestScoring={data.stats.highestScoring}
       />
 
-      {/* True Standings Table */}
-      <TrueStandingsTable standings={data.standings} />
+      {/* True Standings - Mobile Card Grid (< 1024px) / Desktop Table (>= 1024px) */}
+      <div className="block lg:hidden">
+        <TeamStandingsGrid standings={data.standings} />
+      </div>
+      <div className="hidden lg:block">
+        <TrueStandingsTable standings={data.standings} />
+      </div>
 
-      {/* Record Comparison Table */}
-      <RecordComparisonTable
-        trueStandings={data.standings}
-        actualStandings={data.actualStandings || undefined}
-      />
+      {/* Record Comparison - Mobile Card Grid (< 1024px) / Desktop Table (>= 1024px) */}
+      <div className="block lg:hidden">
+        <RecordComparisonGrid
+          trueStandings={data.standings}
+          actualStandings={data.actualStandings || undefined}
+        />
+      </div>
+      <div className="hidden lg:block">
+        <RecordComparisonTable
+          trueStandings={data.standings}
+          actualStandings={data.actualStandings || undefined}
+        />
+      </div>
     </div>
   );
 }
