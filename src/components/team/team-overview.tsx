@@ -43,23 +43,23 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
   const isUnlucky = recordDifferential && recordDifferential.winPercentage < -0.05;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {/* Team Info Card */}
       <Card className="retro-card border-4">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-2xl font-bold text-retro-green">
+        <CardHeader className="pb-2 md:pb-3">
+          <CardTitle className="text-xl md:text-2xl font-bold text-retro-green">
             {teamName}
           </CardTitle>
           <p className="text-sm text-muted-foreground">Owner: {owner}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 md:space-y-4">
           {/* True Record */}
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2">TRUE RECORD</h3>
-            <div className="text-3xl font-bold pixel-font">
+            <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1 md:mb-2">TRUE RECORD</h3>
+            <div className="text-2xl md:text-3xl font-bold pixel-font">
               {trueRecord.wins}-{trueRecord.losses}
             </div>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-xs md:text-sm text-muted-foreground mt-1">
               {formatWinPct(trueRecord.winPercentage)} Win Rate
             </p>
           </div>
@@ -67,12 +67,12 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
           {/* Actual Record (if available) */}
           {actualRecord && (
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-2">ACTUAL RECORD</h3>
-              <div className="text-2xl font-bold">
+              <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1 md:mb-2">ACTUAL RECORD</h3>
+              <div className="text-xl md:text-2xl font-bold">
                 {actualRecord.wins}-{actualRecord.losses}
                 {actualRecord.ties > 0 && `-${actualRecord.ties}`}
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 {formatWinPct(actualRecord.winPercentage)} Win Rate
               </p>
             </div>
@@ -81,20 +81,20 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
           {/* Luck Indicator */}
           {recordDifferential && (
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-2">LUCK INDEX</h3>
+              <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1 md:mb-2">LUCK INDEX</h3>
               <div className="flex items-center gap-2">
                 {isLucky && (
-                  <Badge variant="default" className="bg-green-600">
+                  <Badge variant="default" className="bg-green-600 text-xs md:text-sm">
                     Lucky (+{formatWinPct(recordDifferential.winPercentage)})
                   </Badge>
                 )}
                 {isUnlucky && (
-                  <Badge variant="destructive">
+                  <Badge variant="destructive" className="text-xs md:text-sm">
                     Unlucky ({formatWinPct(recordDifferential.winPercentage)})
                   </Badge>
                 )}
                 {!isLucky && !isUnlucky && (
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="text-xs md:text-sm">
                     Neutral ({formatWinPct(recordDifferential.winPercentage)})
                   </Badge>
                 )}
@@ -106,21 +106,21 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
 
       {/* Scoring Stats Card */}
       <Card className="retro-card border-4">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold">SCORING STATS</CardTitle>
+        <CardHeader className="pb-2 md:pb-3">
+          <CardTitle className="text-base md:text-lg font-bold">SCORING STATS</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 md:space-y-4">
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-1">AVERAGE POINTS</h3>
-            <div className="text-3xl font-bold pixel-font text-retro-green">
+            <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1">AVERAGE POINTS</h3>
+            <div className="text-2xl md:text-3xl font-bold pixel-font text-retro-green">
               {statistics.averagePoints.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">per week</p>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-1">TOTAL POINTS</h3>
-            <div className="text-2xl font-bold">
+            <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1">TOTAL POINTS</h3>
+            <div className="text-xl md:text-2xl font-bold">
               {statistics.totalPoints.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -129,8 +129,8 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-1">CONSISTENCY</h3>
-            <div className="text-2xl font-bold">
+            <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1">CONSISTENCY</h3>
+            <div className="text-xl md:text-2xl font-bold">
               {statistics.consistency.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -141,14 +141,14 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
       </Card>
 
       {/* Record Analysis Card */}
-      <Card className="retro-card border-4">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold">RECORD ANALYSIS</CardTitle>
+      <Card className="retro-card border-4 md:col-span-2 lg:col-span-1">
+        <CardHeader className="pb-2 md:pb-3">
+          <CardTitle className="text-base md:text-lg font-bold">RECORD ANALYSIS</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 md:space-y-4">
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-1">TOTAL MATCHUPS</h3>
-            <div className="text-3xl font-bold pixel-font">
+            <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1">TOTAL MATCHUPS</h3>
+            <div className="text-2xl md:text-3xl font-bold pixel-font">
               {trueRecord.totalGames}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -159,8 +159,8 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
           {actualRecord && recordDifferential && (
             <>
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-1">WIN DIFFERENTIAL</h3>
-                <div className={`text-2xl font-bold ${recordDifferential.wins >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1">WIN DIFFERENTIAL</h3>
+                <div className={`text-xl md:text-2xl font-bold ${recordDifferential.wins >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {recordDifferential.wins >= 0 ? '+' : ''}{recordDifferential.wins}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -169,8 +169,8 @@ export function TeamOverview({ teamData }: TeamOverviewProps) {
               </div>
 
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-1">SCHEDULE IMPACT</h3>
-                <div className="text-sm">
+                <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1">SCHEDULE IMPACT</h3>
+                <div className="text-xs md:text-sm">
                   {isLucky && (
                     <p className="text-green-600 font-semibold">
                       Benefited from favorable matchups

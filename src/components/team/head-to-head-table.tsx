@@ -100,45 +100,90 @@ export function HeadToHeadTable({ headToHead, teamName }: HeadToHeadTableProps) 
 
   return (
     <Card className="retro-card border-4">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold pixel-font">
+      <CardHeader className="pb-3 md:pb-6">
+        <CardTitle className="text-lg md:text-2xl font-bold pixel-font">
           HEAD-TO-HEAD RECORDS
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-xs md:text-sm">
           {teamName}&apos;s true record against each opponent
         </CardDescription>
       </CardHeader>
       <CardContent>
         {/* Summary Stats */}
-        <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-muted rounded-md border-2 border-black">
-            <div className="text-sm font-semibold text-muted-foreground">TOTAL WINS</div>
-            <div className="text-2xl font-bold pixel-font text-green-600">
+        <div className="mb-4 md:mb-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="text-center p-2 md:p-3 bg-muted rounded-md border-2 border-black">
+            <div className="text-xs md:text-sm font-semibold text-muted-foreground">TOTAL WINS</div>
+            <div className="text-lg md:text-2xl font-bold pixel-font text-green-600">
               {totalWins}
             </div>
           </div>
-          <div className="text-center p-3 bg-muted rounded-md border-2 border-black">
-            <div className="text-sm font-semibold text-muted-foreground">TOTAL LOSSES</div>
-            <div className="text-2xl font-bold pixel-font text-red-600">
+          <div className="text-center p-2 md:p-3 bg-muted rounded-md border-2 border-black">
+            <div className="text-xs md:text-sm font-semibold text-muted-foreground">TOTAL LOSSES</div>
+            <div className="text-lg md:text-2xl font-bold pixel-font text-red-600">
               {totalLosses}
             </div>
           </div>
-          <div className="text-center p-3 bg-muted rounded-md border-2 border-black">
-            <div className="text-sm font-semibold text-muted-foreground">WIN %</div>
-            <div className="text-2xl font-bold pixel-font text-retro-green">
+          <div className="text-center p-2 md:p-3 bg-muted rounded-md border-2 border-black">
+            <div className="text-xs md:text-sm font-semibold text-muted-foreground">WIN %</div>
+            <div className="text-lg md:text-2xl font-bold pixel-font text-retro-green">
               {overallWinPct.toFixed(1)}%
             </div>
           </div>
-          <div className="text-center p-3 bg-muted rounded-md border-2 border-black">
-            <div className="text-sm font-semibold text-muted-foreground">OPPONENTS</div>
-            <div className="text-2xl font-bold pixel-font">
+          <div className="text-center p-2 md:p-3 bg-muted rounded-md border-2 border-black">
+            <div className="text-xs md:text-sm font-semibold text-muted-foreground">OPPONENTS</div>
+            <div className="text-lg md:text-2xl font-bold pixel-font">
               {headToHead.length}
             </div>
           </div>
         </div>
 
-        {/* Head-to-Head Table */}
-        <div className="rounded-md border-2 border-black overflow-hidden">
+        {/* Mobile: Card Grid Layout */}
+        <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {sortedData.map((opponent) => {
+            const winPct = (opponent.winPercentage * 100);
+            const isDominating = winPct >= 70;
+            const isStruggling = winPct < 30;
+
+            return (
+              <div
+                key={opponent.opponentId}
+                className="bg-muted/50 rounded-md border-2 border-black p-3"
+              >
+                <div className="mb-2">
+                  <div className="font-bold text-sm truncate">{opponent.opponentName}</div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {opponent.opponentOwner}
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="pixel-font font-bold text-base">
+                    {opponent.wins}-{opponent.losses}
+                    {opponent.ties > 0 && `-${opponent.ties}`}
+                  </div>
+                  <Badge
+                    variant={
+                      isDominating
+                        ? 'default'
+                        : isStruggling
+                        ? 'destructive'
+                        : 'secondary'
+                    }
+                    className={`${isDominating ? 'bg-green-600' : ''} text-xs`}
+                  >
+                    {winPct.toFixed(1)}%
+                  </Badge>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-green-600">W: {opponent.wins}</span>
+                  <span className="text-red-600">L: {opponent.losses}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop: Table Layout */}
+        <div className="hidden md:block rounded-md border-2 border-black overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-retro-green hover:bg-retro-green/90">
@@ -217,9 +262,9 @@ export function HeadToHeadTable({ headToHead, teamName }: HeadToHeadTableProps) 
         </div>
 
         {/* Insights */}
-        <div className="mt-6 p-4 bg-muted rounded-md border-2 border-black">
-          <h3 className="font-bold text-lg mb-2 pixel-font">HEAD-TO-HEAD INSIGHTS</h3>
-          <div className="space-y-2 text-sm">
+        <div className="mt-4 md:mt-6 p-3 md:p-4 bg-muted rounded-md border-2 border-black">
+          <h3 className="font-bold text-sm md:text-lg mb-2 pixel-font">HEAD-TO-HEAD INSIGHTS</h3>
+          <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
             {(() => {
               const bestMatchup = headToHead.reduce((best, curr) =>
                 curr.winPercentage > best.winPercentage ? curr : best

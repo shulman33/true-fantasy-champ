@@ -97,7 +97,7 @@ export function TeamStandingsCard({ team, className }: TeamStandingsCardProps) {
               <span className="text-xs text-gray-400 font-mono uppercase">True Record</span>
               <TrendingUpIcon className="w-3 h-3 text-retro-green" />
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
+            <div className="mt-2 flex items-baseline gap-2 justify-between pr-1">
               <span className="text-2xl font-bold text-white font-mono">
                 {team.wins}-{team.losses}
               </span>

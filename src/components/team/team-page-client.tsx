@@ -93,7 +93,7 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 space-y-4 md:space-y-8">
         <LoadingCard />
         <LoadingCard />
         <LoadingCard />
@@ -103,7 +103,7 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
         <ErrorMessage message={error} />
       </div>
     );
@@ -111,14 +111,14 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
 
   if (!teamData) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
         <ErrorMessage message="Team data not found" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
+    <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 space-y-4 md:space-y-8">
       {/* Team Overview Section */}
       <TeamOverview teamData={teamData} />
 
