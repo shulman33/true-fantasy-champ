@@ -51,8 +51,16 @@ interface WeekPageClientProps {
   week: number;
 }
 
+interface CurrentWeekInfo {
+  currentWeek: number;
+  lastCompletedWeek: number;
+  maxWeek: number;
+  totalWeeks: number;
+}
+
 export function WeekPageClient({ week }: WeekPageClientProps) {
   const [data, setData] = useState<WeeklyAnalysisData | null>(null);
+  const [weekInfo, setWeekInfo] = useState<CurrentWeekInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,17 +70,37 @@ export function WeekPageClient({ week }: WeekPageClientProps) {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/weekly-analysis/${week}`, {
-          cache: 'no-store',
-        });
+        // Fetch both weekly analysis and current week info in parallel
+        const [analysisResponse, weekInfoResponse] = await Promise.all([
+          fetch(`/api/weekly-analysis/${week}`, {
+            cache: 'no-store',
+          }),
+          fetch('/api/current-week', {
+            cache: 'no-store',
+          }),
+        ]);
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!analysisResponse.ok) {
+          const errorData = await analysisResponse.json();
           throw new Error(errorData.error || 'Failed to fetch weekly analysis');
         }
 
-        const analysisData = await response.json();
+        const analysisData = await analysisResponse.json();
         setData(analysisData);
+
+        // Set week info even if the request fails (it has fallback)
+        if (weekInfoResponse.ok) {
+          const weekInfoData = await weekInfoResponse.json();
+          setWeekInfo(weekInfoData);
+        } else {
+          // Fallback to showing all weeks
+          setWeekInfo({
+            currentWeek: 18,
+            lastCompletedWeek: 18,
+            maxWeek: 18,
+            totalWeeks: 18,
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
@@ -112,7 +140,11 @@ export function WeekPageClient({ week }: WeekPageClientProps) {
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Week Navigator */}
-      <WeekNavigator currentWeek={week} totalWeeks={18} />
+      <WeekNavigator
+        currentWeek={week}
+        totalWeeks={weekInfo?.totalWeeks || 18}
+        maxCompletedWeek={weekInfo?.maxWeek || 18}
+      />
 
       {/* Weekly Stats Summary */}
       <WeeklyStats

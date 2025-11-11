@@ -7,11 +7,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface WeekNavigatorProps {
   currentWeek: number;
   totalWeeks: number;
+  maxCompletedWeek?: number; // The highest week with completed data
 }
 
-export function WeekNavigator({ currentWeek, totalWeeks }: WeekNavigatorProps) {
+export function WeekNavigator({ currentWeek, totalWeeks, maxCompletedWeek }: WeekNavigatorProps) {
   const hasPrevious = currentWeek > 1;
-  const hasNext = currentWeek < totalWeeks;
+  const maxWeek = maxCompletedWeek ?? totalWeeks; // Use maxCompletedWeek if provided, otherwise totalWeeks
+  const hasNext = currentWeek < maxWeek;
 
   return (
     <div className="retro-card bg-background/95 p-4 md:p-6">
@@ -53,7 +55,7 @@ export function WeekNavigator({ currentWeek, totalWeeks }: WeekNavigatorProps) {
             {currentWeek}
           </div>
           <div className="text-[10px] md:text-sm text-muted-foreground mt-1">
-            of {totalWeeks}
+            of {maxWeek} {maxCompletedWeek && maxCompletedWeek < totalWeeks && <span className="text-yellow-600">(completed)</span>}
           </div>
         </div>
 
@@ -92,21 +94,39 @@ export function WeekNavigator({ currentWeek, totalWeeks }: WeekNavigatorProps) {
           Quick Jump
         </div>
         <div className="flex flex-wrap gap-2 justify-center">
-          {Array.from({ length: totalWeeks }, (_, i) => i + 1).map((weekNum) => (
-            <Link key={weekNum} href={`/week/${weekNum}`}>
-              <Button
-                variant={weekNum === currentWeek ? 'default' : 'outline'}
-                size="sm"
-                className={`retro-button min-w-[3rem] ${
-                  weekNum === currentWeek
-                    ? 'bg-primary text-primary-foreground'
-                    : ''
-                }`}
-              >
-                {weekNum}
-              </Button>
-            </Link>
-          ))}
+          {Array.from({ length: totalWeeks }, (_, i) => i + 1).map((weekNum) => {
+            const isCompleted = weekNum <= maxWeek;
+            const isCurrent = weekNum === currentWeek;
+
+            if (!isCompleted) {
+              // Show disabled button for incomplete weeks
+              return (
+                <Button
+                  key={weekNum}
+                  variant="outline"
+                  size="sm"
+                  disabled
+                  className="retro-button min-w-[3rem] opacity-40 cursor-not-allowed"
+                >
+                  {weekNum}
+                </Button>
+              );
+            }
+
+            return (
+              <Link key={weekNum} href={`/week/${weekNum}`}>
+                <Button
+                  variant={isCurrent ? 'default' : 'outline'}
+                  size="sm"
+                  className={`retro-button min-w-[3rem] ${
+                    isCurrent ? 'bg-primary text-primary-foreground' : ''
+                  }`}
+                >
+                  {weekNum}
+                </Button>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
