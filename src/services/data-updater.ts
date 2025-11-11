@@ -51,7 +51,7 @@ export async function updateAllData(
     if (!maxWeek) {
       log('🔍 Detecting current week from ESPN...');
       try {
-        maxWeek = await espnService.getCurrentWeek();
+        maxWeek = await espnService.getCurrentWeek() - 1;
         log(`  ✓ Current week: ${maxWeek}`);
       } catch (error) {
         const errorMsg = `Failed to detect current week: ${error instanceof Error ? error.message : error}`;
