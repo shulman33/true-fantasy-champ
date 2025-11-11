@@ -66,7 +66,78 @@ export function WeeklyScoreboard({ scores, week }: WeeklyScoreboardProps) {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border border-primary/50 overflow-hidden">
+        {/* Mobile View - Card Layout */}
+        <div className="md:hidden space-y-3">
+          {sortedScores.map((entry) => {
+            const wins = scores.length - entry.rank;
+            const losses = entry.rank - 1;
+
+            return (
+              <Link key={entry.teamId} href={`/team/${entry.teamId}`}>
+                <div
+                  className={`border-2 rounded-lg p-3 transition-all hover:shadow-lg ${
+                    entry.rank === 1
+                      ? 'border-retro-yellow bg-retro-yellow/5'
+                      : entry.rank === 2
+                      ? 'border-gray-400 bg-gray-400/5'
+                      : entry.rank === 3
+                      ? 'border-amber-600 bg-amber-600/5'
+                      : 'border-primary/30 bg-background/50'
+                  }`}
+                >
+                  {/* Header Row */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {getRankIcon(entry.rank)}
+                      <Badge
+                        variant={getRankBadgeVariant(entry.rank)}
+                        className={`font-press-start text-xs px-2 py-1 ${
+                          entry.rank === 1
+                            ? 'bg-retro-yellow text-black border-retro-yellow'
+                            : entry.rank === 2
+                            ? 'bg-gray-400 text-black border-gray-400'
+                            : entry.rank === 3
+                            ? 'bg-amber-600 text-white border-amber-600'
+                            : ''
+                        }`}
+                      >
+                        #{entry.rank}
+                      </Badge>
+                    </div>
+                    <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10">
+                      {entry.abbrev}
+                    </Badge>
+                  </div>
+
+                  {/* Team Info */}
+                  <div className="mb-2">
+                    <h3 className="font-bold text-base line-clamp-1">{entry.teamName}</h3>
+                    <p className="text-xs text-muted-foreground">Owner: {entry.owner}</p>
+                  </div>
+
+                  {/* Stats Row */}
+                  <div className="flex items-center justify-between pt-2 border-t border-primary/20">
+                    <div>
+                      <div className="text-xs text-muted-foreground">Score</div>
+                      <div className="text-xl font-bold text-retro-green pixel-font">
+                        {entry.score.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-muted-foreground">Record</div>
+                      <div className="text-sm font-bold">
+                        {wins}-{losses}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop View - Table Layout */}
+        <div className="hidden md:block rounded-md border border-primary/50 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10 border-primary/50 hover:bg-primary/20">
@@ -74,13 +145,13 @@ export function WeeklyScoreboard({ scores, week }: WeeklyScoreboardProps) {
                   Rank
                 </TableHead>
                 <TableHead className="text-primary font-bold">Team</TableHead>
-                <TableHead className="text-primary font-bold hidden md:table-cell">
+                <TableHead className="text-primary font-bold">
                   Owner
                 </TableHead>
                 <TableHead className="text-primary font-bold text-right">
                   Score
                 </TableHead>
-                <TableHead className="text-primary font-bold text-right hidden sm:table-cell">
+                <TableHead className="text-primary font-bold text-right">
                   Record
                 </TableHead>
               </TableRow>
@@ -116,27 +187,22 @@ export function WeeklyScoreboard({ scores, week }: WeeklyScoreboardProps) {
                         href={`/team/${entry.teamId}`}
                         className="hover:text-primary transition-colors"
                       >
-                        <div className="font-bold text-sm md:text-base">
-                          {entry.teamName}
-                        </div>
-                        <div className="text-xs text-muted-foreground md:hidden">
-                          {entry.owner}
-                        </div>
+                        <div className="font-bold">{entry.teamName}</div>
                       </Link>
                     </TableCell>
 
-                    {/* Owner (hidden on mobile) */}
-                    <TableCell className="text-muted-foreground hidden md:table-cell">
+                    {/* Owner */}
+                    <TableCell className="text-muted-foreground">
                       {entry.owner}
                     </TableCell>
 
                     {/* Score */}
-                    <TableCell className="text-right font-bold text-lg md:text-xl">
+                    <TableCell className="text-right font-bold text-xl">
                       <span className="text-primary">{entry.score.toFixed(2)}</span>
                     </TableCell>
 
-                    {/* True Record for this week (hidden on mobile) */}
-                    <TableCell className="text-right hidden sm:table-cell">
+                    {/* True Record for this week */}
+                    <TableCell className="text-right">
                       <span className="text-sm text-muted-foreground">
                         {wins}-{losses}
                       </span>
@@ -148,13 +214,13 @@ export function WeeklyScoreboard({ scores, week }: WeeklyScoreboardProps) {
           </Table>
         </div>
 
-        {/* Mobile-friendly legend */}
-        <div className="mt-4 text-xs text-muted-foreground space-y-1">
+        {/* Legend */}
+        <div className="mt-4 pt-4 border-t border-primary/30 text-xs text-muted-foreground space-y-1">
           <p>
             <Trophy className="h-3 w-3 inline text-accent" /> Weekly champion
           </p>
-          <p className="sm:hidden">
-            Tap team names to view detailed performance
+          <p className="md:hidden">
+            Tap cards to view detailed team performance
           </p>
         </div>
       </CardContent>
