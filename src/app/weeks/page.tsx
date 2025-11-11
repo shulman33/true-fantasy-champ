@@ -45,14 +45,14 @@ export default function WeeksPage() {
                           : "border-muted bg-muted/20"
                       }`}
                     >
-                      <CardContent className="p-4 md:p-6 text-center">
+                      <CardContent className="p-3 md:p-6 text-center">
                         <div className="mb-2">
                           {isCurrent ? (
-                            <TrendingUp className="h-6 w-6 mx-auto text-accent" />
+                            <TrendingUp className="h-5 w-5 md:h-6 md:w-6 mx-auto text-accent" />
                           ) : isPast ? (
-                            <BarChart3 className="h-6 w-6 mx-auto text-primary" />
+                            <BarChart3 className="h-5 w-5 md:h-6 md:w-6 mx-auto text-primary" />
                           ) : (
-                            <Calendar className="h-6 w-6 mx-auto text-muted-foreground" />
+                            <Calendar className="h-5 w-5 md:h-6 md:w-6 mx-auto text-muted-foreground" />
                           )}
                         </div>
                         <div
@@ -66,7 +66,7 @@ export default function WeeksPage() {
                         >
                           {week}
                         </div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">
+                        <div className="text-[9px] md:text-xs text-muted-foreground uppercase tracking-tight md:tracking-wider px-1">
                           {isCurrent ? "Current" : isPast ? "Completed" : "Upcoming"}
                         </div>
                       </CardContent>

@@ -217,23 +217,23 @@ export function MatchupMatrix({ matchupMatrix, scores, week }: MatchupMatrixProp
                   </Badge>
                 </div>
 
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
                     <span className="text-muted-foreground">Record:</span>
                     <span className="font-bold">
                       {wins}-{losses}
                       {ties > 0 && `-${ties}`}
                     </span>
                   </div>
-                  <div className="flex gap-2">
-                    <Badge variant="outline" className="bg-primary/20 text-primary">
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="outline" className="bg-primary/20 text-primary text-xs px-2 py-0.5">
                       {wins}W
                     </Badge>
-                    <Badge variant="outline" className="bg-destructive/20 text-destructive">
+                    <Badge variant="outline" className="bg-destructive/20 text-destructive text-xs px-2 py-0.5">
                       {losses}L
                     </Badge>
                     {ties > 0 && (
-                      <Badge variant="outline" className="bg-muted/30">
+                      <Badge variant="outline" className="bg-muted/30 text-xs px-2 py-0.5">
                         {ties}T
                       </Badge>
                     )}

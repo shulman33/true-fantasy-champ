@@ -15,68 +15,72 @@ export function WeekNavigator({ currentWeek, totalWeeks }: WeekNavigatorProps) {
 
   return (
     <div className="retro-card bg-background/95 p-4 md:p-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-2 md:gap-4">
         {/* Previous Week Button */}
-        <div className="flex-1">
+        <div className="flex-shrink-0">
           {hasPrevious ? (
             <Link href={`/week/${currentWeek - 1}`}>
               <Button
                 variant="outline"
-                className="retro-button w-full md:w-auto"
+                className="retro-button px-2 md:px-4"
+                size="sm"
               >
-                <ChevronLeft className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Week {currentWeek - 1}</span>
-                <span className="sm:hidden">Prev</span>
+                <ChevronLeft className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Week {currentWeek - 1}</span>
+                <span className="md:hidden sr-only">Prev</span>
               </Button>
             </Link>
           ) : (
             <Button
               variant="outline"
-              className="retro-button w-full md:w-auto opacity-50 cursor-not-allowed"
+              className="retro-button px-2 md:px-4 opacity-50 cursor-not-allowed"
+              size="sm"
               disabled
             >
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">No Previous</span>
-              <span className="sm:hidden">Prev</span>
+              <ChevronLeft className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">No Previous</span>
+              <span className="md:hidden sr-only">Prev</span>
             </Button>
           )}
         </div>
 
         {/* Current Week Display */}
-        <div className="text-center">
-          <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mb-1">
+        <div className="text-center flex-1 min-w-0 px-2">
+          <div className="text-[10px] md:text-sm text-muted-foreground uppercase tracking-tight md:tracking-wider mb-1">
             Current Week
           </div>
           <div className="text-2xl md:text-4xl font-bold text-primary text-retro">
             {currentWeek}
           </div>
-          <div className="text-xs md:text-sm text-muted-foreground mt-1">
+          <div className="text-[10px] md:text-sm text-muted-foreground mt-1">
             of {totalWeeks}
           </div>
         </div>
 
         {/* Next Week Button */}
-        <div className="flex-1 flex justify-end">
+        <div className="flex-shrink-0">
           {hasNext ? (
             <Link href={`/week/${currentWeek + 1}`}>
               <Button
                 variant="outline"
-                className="retro-button w-full md:w-auto"
+                className="retro-button px-2 md:px-4"
+                size="sm"
               >
-                <span className="hidden sm:inline">Week {currentWeek + 1}</span>
-                <span className="sm:hidden">Next</span>
-                <ChevronRight className="ml-2 h-4 w-4" />
+                <span className="hidden md:inline">Week {currentWeek + 1}</span>
+                <span className="md:hidden sr-only">Next</span>
+                <ChevronRight className="h-4 w-4 md:ml-2" />
               </Button>
             </Link>
           ) : (
             <Button
               variant="outline"
-              className="retro-button w-full md:w-auto opacity-50 cursor-not-allowed"
+              className="retro-button px-2 md:px-4 opacity-50 cursor-not-allowed"
+              size="sm"
               disabled
             >
-              <span className="hidden sm:inline">No Next</span>
-              <span className="sm:hidden">Next</span>
-              <ChevronRight className="ml-2 h-4 w-4" />
+              <span className="hidden md:inline">No Next</span>
+              <span className="md:hidden sr-only">Next</span>
+              <ChevronRight className="h-4 w-4 md:ml-2" />
             </Button>
           )}
         </div>
