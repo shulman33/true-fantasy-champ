@@ -39,44 +39,44 @@
 
 ### Database Schema Setup
 
-- [ ] T007 Create leagues table migration in supabase/migrations/20251112000001_create_leagues.sql
-- [ ] T008 [P] Create teams table migration in supabase/migrations/20251112000002_create_teams.sql
-- [ ] T009 [P] Create weekly_scores table migration in supabase/migrations/20251112000003_create_weekly_scores.sql
-- [ ] T010 [P] Create true_records table migration in supabase/migrations/20251112000004_create_true_records.sql
-- [ ] T011 [P] Create actual_standings table migration in supabase/migrations/20251112000005_create_actual_standings.sql
-- [ ] T012 [P] Create update_jobs table migration in supabase/migrations/20251112000006_create_update_jobs.sql
-- [ ] T013 Run all migrations and verify tables created in Supabase
-- [ ] T014 Generate TypeScript types from Supabase schema in src/types/database.ts
+- [X] T007 Create leagues table migration in supabase/migrations/20251112000001_create_leagues.sql
+- [X] T008 [P] Create teams table migration in supabase/migrations/20251112000002_create_teams.sql
+- [X] T009 [P] Create weekly_scores table migration in supabase/migrations/20251112000003_create_weekly_scores.sql
+- [X] T010 [P] Create true_records table migration in supabase/migrations/20251112000004_create_true_records.sql
+- [X] T011 [P] Create actual_standings table migration in supabase/migrations/20251112000005_create_actual_standings.sql
+- [X] T012 [P] Create update_jobs table migration in supabase/migrations/20251112000006_create_update_jobs.sql
+- [x] T013 Run all migrations and verify tables created in Supabase
+- [x] T014 Generate TypeScript types from Supabase schema in src/types/database.ts
 
 ### Row Level Security (RLS) Policies
 
-- [ ] T015 Create RLS policy "Users can view own leagues" on leagues table
-- [ ] T016 [P] Create RLS policy "Users can insert own leagues" on leagues table
-- [ ] T017 [P] Create RLS policy "Users can update own leagues" on leagues table
-- [ ] T018 Create RLS policy "Users can view teams in their leagues" on teams table
-- [ ] T019 [P] Create RLS policy "Users can view scores in their leagues" on weekly_scores table
-- [ ] T020 [P] Create RLS policy "Users can view true records in their leagues" on true_records table
-- [ ] T021 [P] Create RLS policy "Users can view standings in their leagues" on actual_standings table
-- [ ] T022 [P] Create RLS policy "Users can view update jobs for their leagues" on update_jobs table
+- [X] T015 Create RLS policy "Users can view own leagues" on leagues table (included in migration)
+- [X] T016 [P] Create RLS policy "Users can insert own leagues" on leagues table (included in migration)
+- [X] T017 [P] Create RLS policy "Users can update own leagues" on leagues table (included in migration)
+- [X] T018 Create RLS policy "Users can view teams in their leagues" on teams table (included in migration)
+- [X] T019 [P] Create RLS policy "Users can view scores in their leagues" on weekly_scores table (included in migration)
+- [X] T020 [P] Create RLS policy "Users can view true records in their leagues" on true_records table (included in migration)
+- [X] T021 [P] Create RLS policy "Users can view standings in their leagues" on actual_standings table (included in migration)
+- [X] T022 [P] Create RLS policy "Users can view update jobs for their leagues" on update_jobs table (included in migration)
 
 ### Core Authentication Infrastructure
 
-- [ ] T023 Create Next.js middleware in src/middleware.ts for session refresh and route protection
-- [ ] T024 Create auth validation schemas with Zod in src/lib/auth/validation.ts
-- [ ] T025 [P] Create rate limiting utilities in src/lib/auth/rate-limit.ts using Upstash Redis
-- [ ] T026 [P] Create session management helpers in src/lib/auth/session.ts
-- [ ] T027 Create TypeScript types for auth in src/types/auth.ts
-- [ ] T028 [P] Create TypeScript types for user in src/types/user.ts
-- [ ] T029 Update Redis client in src/lib/redis.ts to support session caching
+- [X] T023 Create Next.js middleware in src/middleware.ts for session refresh and route protection
+- [X] T024 Create auth validation schemas with Zod in src/lib/auth/validation.ts
+- [X] T025 [P] Create rate limiting utilities in src/lib/auth/rate-limit.ts using Upstash Redis
+- [X] T026 [P] Create session management helpers in src/lib/auth/session.ts
+- [X] T027 Create TypeScript types for auth in src/types/auth.ts
+- [X] T028 [P] Create TypeScript types for user in src/types/user.ts
+- [X] T029 Update Redis client in src/lib/redis.ts to support session caching
 
 ### Email Configuration
 
-- [ ] T030 Configure email provider in Supabase Dashboard (Authentication → Providers)
-- [ ] T031 [P] Enable email confirmations in Supabase Dashboard
-- [ ] T032 [P] Customize email verification template in Supabase Dashboard
-- [ ] T033 [P] Customize password reset email template in Supabase Dashboard
-- [ ] T034 [P] Customize magic link email template in Supabase Dashboard
-- [ ] T035 Set site URL and redirect URLs in Supabase Dashboard (Authentication → URL Configuration)
+- [x] T030 Configure email provider in Supabase Dashboard (Authentication → Providers) ⚠️ MANUAL
+- [x] T031 [P] Enable email confirmations in Supabase Dashboard ⚠️ MANUAL
+- [x] T032 [P] Customize email verification template in Supabase Dashboard ⚠️ MANUAL
+- [x] T033 [P] Customize password reset email template in Supabase Dashboard ⚠️ MANUAL
+- [x] T034 [P] Customize magic link email template in Supabase Dashboard ⚠️ MANUAL
+- [x] T035 Set site URL and redirect URLs in Supabase Dashboard (Authentication → URL Configuration) ⚠️ MANUAL
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

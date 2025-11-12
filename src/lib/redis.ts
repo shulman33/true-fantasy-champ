@@ -233,8 +233,12 @@ export async function withRedisErrorHandling<T>(
   }
 }
 
+// Export the base Redis client for use in auth and other modules
+// This allows direct Redis operations like INCR, EXPIRE, DEL, etc.
+export const redis = getRedisClient();
+
 // Export all operations as a single object for easier imports
-export const redis = {
+export const redisOps = {
   getClient: getRedisClient,
   setWeeklyScores,
   getWeeklyScores,
