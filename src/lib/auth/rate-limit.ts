@@ -1,5 +1,5 @@
 /**
- * Rate Limiting utilities using Upstash Redis
+ * Rate Limiting utilities using Upstash Redis and @upstash/ratelimit
  *
  * Implements IP-based rate limiting to prevent brute force attacks
  * and abuse of authentication endpoints.
@@ -11,6 +11,7 @@
  * - Magic link: 6 per hour per email
  */
 
+import { Ratelimit } from '@upstash/ratelimit'
 import { redis } from '@/lib/redis'
 
 export interface RateLimitResult {
@@ -28,34 +29,110 @@ export interface RateLimitConfig {
 }
 
 /**
+ * Rate limit configurations for different operations
+ */
+export const RateLimits = {
+  LOGIN: {
+    limit: 5,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+  },
+  PASSWORD_RESET: {
+    limit: 3,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  },
+  EMAIL_VERIFICATION: {
+    limit: 3,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  },
+  MAGIC_LINK: {
+    limit: 6,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  },
+  SIGNUP: {
+    limit: 5,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+  },
+} as const
+
+/**
+ * Create Ratelimit instances for each type of operation
+ * Using sliding window algorithm for more accurate rate limiting
+ */
+
+// Login rate limiter (5 requests per 15 minutes)
+const loginRatelimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(RateLimits.LOGIN.limit, `${RateLimits.LOGIN.windowMs} ms`),
+  prefix: 'rate_limit:login',
+})
+
+// Signup rate limiter (5 requests per 15 minutes)
+const signupRatelimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(RateLimits.SIGNUP.limit, `${RateLimits.SIGNUP.windowMs} ms`),
+  prefix: 'rate_limit:signup',
+})
+
+// Password reset rate limiter (3 requests per hour)
+const passwordResetRatelimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(
+    RateLimits.PASSWORD_RESET.limit,
+    `${RateLimits.PASSWORD_RESET.windowMs} ms`
+  ),
+  prefix: 'rate_limit:password_reset',
+})
+
+// Email verification rate limiter (3 requests per hour)
+const emailVerificationRatelimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(
+    RateLimits.EMAIL_VERIFICATION.limit,
+    `${RateLimits.EMAIL_VERIFICATION.windowMs} ms`
+  ),
+  prefix: 'rate_limit:email_verification',
+})
+
+// Magic link rate limiter (6 requests per hour)
+const magicLinkRatelimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(
+    RateLimits.MAGIC_LINK.limit,
+    `${RateLimits.MAGIC_LINK.windowMs} ms`
+  ),
+  prefix: 'rate_limit:magic_link',
+})
+
+/**
  * Check if the rate limit has been exceeded
- * Uses the sliding window algorithm with Redis INCR and EXPIRE
+ * Uses the sliding window algorithm via @upstash/ratelimit
  */
 export async function checkRateLimit(config: RateLimitConfig): Promise<RateLimitResult> {
   const { key, limit, windowMs } = config
 
+  // Create a temporary ratelimiter for custom configurations
+  const ratelimiter = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(limit, `${windowMs} ms`),
+    prefix: key.split(':').slice(0, -1).join(':'), // Extract prefix from key
+  })
+
+  const identifier = key.split(':').pop() || key // Extract identifier from key
+
   try {
-    // Increment the counter for this key
-    const count = await redis.incr(key)
+    const result = await ratelimiter.limit(identifier)
 
-    // If this is the first attempt, set the expiry
-    if (count === 1) {
-      await redis.pexpire(key, windowMs)
-    }
-
-    // Get the remaining TTL
-    const ttl = await redis.ttl(key)
-    const resetDate = new Date(Date.now() + (ttl * 1000))
-
-    const remaining = Math.max(0, limit - count)
-    const success = count <= limit
+    // Calculate reset time from result.reset (timestamp in milliseconds)
+    const resetDate = new Date(result.reset)
+    const now = Date.now()
+    const retryAfter = result.success ? undefined : Math.ceil((result.reset - now) / 1000)
 
     return {
-      success,
-      limit,
-      remaining,
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
       reset: resetDate,
-      retryAfter: success ? undefined : ttl,
+      retryAfter,
     }
   } catch (error) {
     // On Redis failure, allow the request (fail open)
@@ -117,79 +194,153 @@ export function getClientIP(request: Request): string {
 }
 
 /**
- * Rate limit configurations for different operations
- */
-export const RateLimits = {
-  LOGIN: {
-    limit: 5,
-    windowMs: 15 * 60 * 1000, // 15 minutes
-  },
-  PASSWORD_RESET: {
-    limit: 3,
-    windowMs: 60 * 60 * 1000, // 1 hour
-  },
-  EMAIL_VERIFICATION: {
-    limit: 3,
-    windowMs: 60 * 60 * 1000, // 1 hour
-  },
-  MAGIC_LINK: {
-    limit: 6,
-    windowMs: 60 * 60 * 1000, // 1 hour
-  },
-  SIGNUP: {
-    limit: 5,
-    windowMs: 15 * 60 * 1000, // 15 minutes
-  },
-} as const
-
-/**
  * Helper function to check login rate limit
  */
 export async function checkLoginRateLimit(ip: string): Promise<RateLimitResult> {
-  return checkRateLimit({
-    key: `rate_limit:login:${ip}`,
-    ...RateLimits.LOGIN,
-  })
+  try {
+    const result = await loginRatelimiter.limit(ip)
+
+    const resetDate = new Date(result.reset)
+    const now = Date.now()
+    const retryAfter = result.success ? undefined : Math.ceil((result.reset - now) / 1000)
+
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: resetDate,
+      retryAfter,
+    }
+  } catch (error) {
+    console.error('Login rate limit check failed:', error)
+
+    return {
+      success: true,
+      limit: RateLimits.LOGIN.limit,
+      remaining: RateLimits.LOGIN.limit,
+      reset: new Date(Date.now() + RateLimits.LOGIN.windowMs),
+    }
+  }
 }
 
 /**
  * Helper function to check password reset rate limit
  */
 export async function checkPasswordResetRateLimit(email: string): Promise<RateLimitResult> {
-  return checkRateLimit({
-    key: `rate_limit:password_reset:${email.toLowerCase()}`,
-    ...RateLimits.PASSWORD_RESET,
-  })
+  try {
+    const result = await passwordResetRatelimiter.limit(email.toLowerCase())
+
+    const resetDate = new Date(result.reset)
+    const now = Date.now()
+    const retryAfter = result.success ? undefined : Math.ceil((result.reset - now) / 1000)
+
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: resetDate,
+      retryAfter,
+    }
+  } catch (error) {
+    console.error('Password reset rate limit check failed:', error)
+
+    return {
+      success: true,
+      limit: RateLimits.PASSWORD_RESET.limit,
+      remaining: RateLimits.PASSWORD_RESET.limit,
+      reset: new Date(Date.now() + RateLimits.PASSWORD_RESET.windowMs),
+    }
+  }
 }
 
 /**
  * Helper function to check email verification rate limit
  */
 export async function checkEmailVerificationRateLimit(email: string): Promise<RateLimitResult> {
-  return checkRateLimit({
-    key: `rate_limit:email_verification:${email.toLowerCase()}`,
-    ...RateLimits.EMAIL_VERIFICATION,
-  })
+  try {
+    const result = await emailVerificationRatelimiter.limit(email.toLowerCase())
+
+    const resetDate = new Date(result.reset)
+    const now = Date.now()
+    const retryAfter = result.success ? undefined : Math.ceil((result.reset - now) / 1000)
+
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: resetDate,
+      retryAfter,
+    }
+  } catch (error) {
+    console.error('Email verification rate limit check failed:', error)
+
+    return {
+      success: true,
+      limit: RateLimits.EMAIL_VERIFICATION.limit,
+      remaining: RateLimits.EMAIL_VERIFICATION.limit,
+      reset: new Date(Date.now() + RateLimits.EMAIL_VERIFICATION.windowMs),
+    }
+  }
 }
 
 /**
  * Helper function to check magic link rate limit
  */
 export async function checkMagicLinkRateLimit(email: string): Promise<RateLimitResult> {
-  return checkRateLimit({
-    key: `rate_limit:magic_link:${email.toLowerCase()}`,
-    ...RateLimits.MAGIC_LINK,
-  })
+  try {
+    const result = await magicLinkRatelimiter.limit(email.toLowerCase())
+
+    const resetDate = new Date(result.reset)
+    const now = Date.now()
+    const retryAfter = result.success ? undefined : Math.ceil((result.reset - now) / 1000)
+
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: resetDate,
+      retryAfter,
+    }
+  } catch (error) {
+    console.error('Magic link rate limit check failed:', error)
+
+    return {
+      success: true,
+      limit: RateLimits.MAGIC_LINK.limit,
+      remaining: RateLimits.MAGIC_LINK.limit,
+      reset: new Date(Date.now() + RateLimits.MAGIC_LINK.windowMs),
+    }
+  }
 }
 
 /**
  * Helper function to check signup rate limit
  */
 export async function checkSignupRateLimit(ip: string): Promise<RateLimitResult> {
-  return checkRateLimit({
-    key: `rate_limit:signup:${ip}`,
-    ...RateLimits.SIGNUP,
-  })
+  try {
+    const result = await signupRatelimiter.limit(ip)
+
+    const resetDate = new Date(result.reset)
+    const now = Date.now()
+    const retryAfter = result.success ? undefined : Math.ceil((result.reset - now) / 1000)
+
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: resetDate,
+      retryAfter,
+    }
+  } catch (error) {
+    console.error('Signup rate limit check failed:', error)
+
+    return {
+      success: true,
+      limit: RateLimits.SIGNUP.limit,
+      remaining: RateLimits.SIGNUP.limit,
+      reset: new Date(Date.now() + RateLimits.SIGNUP.windowMs),
+    }
+  }
 }
 
 /**
