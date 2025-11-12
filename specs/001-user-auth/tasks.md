@@ -8,6 +8,7 @@
 **Important Tools**:
 - **Context7**: Use `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs` to get up-to-date documentation for Supabase, Next.js, and other libraries
 - **Supabase**: Primary authentication and database provider - use Supabase clients and RLS policies for all data access
+- **ShadCN UI**: Use ShadCN UI components for all UI elements (forms, buttons, inputs, cards, etc.) - already set up in the project
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -90,8 +91,8 @@
 ### Implementation for User Story 1
 
 - [ ] T036 [US1] Use Context7 to fetch Supabase Auth documentation for signup patterns
-- [ ] T037 [P] [US1] Create signup page UI in src/app/(auth)/signup/page.tsx with Client Component
-- [ ] T038 [P] [US1] Create SignupForm component in src/components/auth/SignupForm.tsx with email, password, and name fields
+- [ ] T037 [P] [US1] Create signup page UI in src/app/(auth)/signup/page.tsx with Client Component using ShadCN Card
+- [ ] T038 [P] [US1] Create SignupForm component in src/components/auth/SignupForm.tsx using ShadCN Form, Input, Button components
 - [ ] T039 [US1] Create POST /api/auth/signup route handler in src/app/api/auth/signup/route.ts
 - [ ] T040 [US1] Implement signup logic in AuthService (src/services/auth-service.ts) calling Supabase Auth
 - [ ] T041 [US1] Add validation for signup request (email format, password strength) using Zod schemas
@@ -114,8 +115,8 @@
 ### Implementation for User Story 2
 
 - [ ] T047 [US2] Use Context7 to fetch Supabase Auth documentation for login and session patterns
-- [ ] T048 [P] [US2] Create login page UI in src/app/(auth)/login/page.tsx
-- [ ] T049 [P] [US2] Create LoginForm component in src/components/auth/LoginForm.tsx
+- [ ] T048 [P] [US2] Create login page UI in src/app/(auth)/login/page.tsx using ShadCN Card
+- [ ] T049 [P] [US2] Create LoginForm component in src/components/auth/LoginForm.tsx using ShadCN Form, Input, Button components
 - [ ] T050 [US2] Create POST /api/auth/login route handler in src/app/api/auth/login/route.ts
 - [ ] T051 [US2] Implement login logic in AuthService calling Supabase signInWithPassword
 - [ ] T052 [US2] Add validation for login request (email format, non-empty password)
@@ -143,14 +144,14 @@
 ### Implementation for User Story 3
 
 - [ ] T063 [US3] Use Context7 to fetch Supabase Auth documentation for password reset patterns
-- [ ] T064 [P] [US3] Create forgot-password page in src/app/(auth)/forgot-password/page.tsx
-- [ ] T065 [P] [US3] Create ForgotPasswordForm component in src/components/auth/ForgotPasswordForm.tsx
+- [ ] T064 [P] [US3] Create forgot-password page in src/app/(auth)/forgot-password/page.tsx using ShadCN Card
+- [ ] T065 [P] [US3] Create ForgotPasswordForm component in src/components/auth/ForgotPasswordForm.tsx using ShadCN Form, Input, Button
 - [ ] T066 [US3] Create POST /api/auth/forgot-password route in src/app/api/auth/forgot-password/route.ts
 - [ ] T067 [US3] Implement forgot password logic in AuthService calling Supabase resetPasswordForEmail
 - [ ] T068 [US3] Add rate limiting (3 requests per hour per email)
 - [ ] T069 [US3] Ensure no email enumeration (same response whether email exists or not)
-- [ ] T070 [P] [US3] Create reset-password page in src/app/(auth)/reset-password/page.tsx
-- [ ] T071 [P] [US3] Create ResetPasswordForm component in src/components/auth/ResetPasswordForm.tsx
+- [ ] T070 [P] [US3] Create reset-password page in src/app/(auth)/reset-password/page.tsx using ShadCN Card
+- [ ] T071 [P] [US3] Create ResetPasswordForm component in src/components/auth/ResetPasswordForm.tsx using ShadCN Form, Input, Button
 - [ ] T072 [US3] Create POST /api/auth/reset-password route in src/app/api/auth/reset-password/route.ts
 - [ ] T073 [US3] Implement password reset completion logic in AuthService calling Supabase updateUser
 - [ ] T074 [US3] Add validation for new password (min 8 chars, letter + number)
@@ -170,9 +171,9 @@
 ### Implementation for User Story 4
 
 - [ ] T077 [US4] Use Context7 to fetch Next.js documentation for Server Components and data fetching patterns
-- [ ] T078 [P] [US4] Create authenticated layout in src/app/(authenticated)/layout.tsx with navbar and league selector
-- [ ] T079 [P] [US4] Create LeagueSelector component in src/components/user/LeagueSelector.tsx
-- [ ] T080 [P] [US4] Create UserNav component in src/components/user/UserNav.tsx for user menu in navbar
+- [ ] T078 [P] [US4] Create authenticated layout in src/app/(authenticated)/layout.tsx with navbar and league selector using ShadCN components
+- [ ] T079 [P] [US4] Create LeagueSelector component in src/components/user/LeagueSelector.tsx using ShadCN Select/Dropdown
+- [ ] T080 [P] [US4] Create UserNav component in src/components/user/UserNav.tsx using ShadCN DropdownMenu and Avatar
 - [ ] T081 [US4] Create GET /api/user/leagues route in src/app/api/user/leagues/route.ts
 - [ ] T082 [US4] Create POST /api/user/leagues route in src/app/api/user/leagues/route.ts
 - [ ] T083 [US4] Create DELETE /api/user/leagues/[leagueId] route in src/app/api/user/leagues/[leagueId]/route.ts
@@ -208,7 +209,7 @@
 - [ ] T100 [US5] Use Context7 to fetch Supabase OAuth documentation for Google provider setup
 - [ ] T101 [P] [US5] Create Google Cloud Console project and configure OAuth 2.0 credentials
 - [ ] T102 [P] [US5] Configure Google OAuth provider in Supabase Dashboard with client ID and secret
-- [ ] T103 [US5] Create OAuthButtons component in src/components/auth/OAuthButtons.tsx
+- [ ] T103 [US5] Create OAuthButtons component in src/components/auth/OAuthButtons.tsx using ShadCN Button with icons
 - [ ] T104 [US5] Add OAuthButtons to signup page (src/app/(auth)/signup/page.tsx)
 - [ ] T105 [P] [US5] Add OAuthButtons to login page (src/app/(auth)/login/page.tsx)
 - [ ] T106 [US5] Create OAuth callback route handler in src/app/auth/callback/route.ts
@@ -229,8 +230,8 @@
 
 - [ ] T111 [P] Create GET /api/user/profile route in src/app/api/user/profile/route.ts
 - [ ] T112 [P] Create PATCH /api/user/profile route in src/app/api/user/profile/route.ts
-- [ ] T113 Create settings page in src/app/(authenticated)/settings/page.tsx
-- [ ] T114 [P] Create ProfileSettings component in src/components/user/ProfileSettings.tsx
+- [ ] T113 Create settings page in src/app/(authenticated)/settings/page.tsx using ShadCN Card and Tabs
+- [ ] T114 [P] Create ProfileSettings component in src/components/user/ProfileSettings.tsx using ShadCN Form components
 - [ ] T115 Implement getUserProfile in UserService
 - [ ] T116 [P] Implement updateUserProfile in UserService
 
@@ -249,7 +250,7 @@
 ### Magic Link (Passwordless Login)
 
 - [ ] T126 Use Context7 to fetch Supabase magic link documentation
-- [ ] T127 [P] Create MagicLinkForm component in src/components/auth/MagicLinkForm.tsx
+- [ ] T127 [P] Create MagicLinkForm component in src/components/auth/MagicLinkForm.tsx using ShadCN Form, Input, Button
 - [ ] T128 Create POST /api/auth/magic-link route in src/app/api/auth/magic-link/route.ts
 - [ ] T129 Implement magic link logic in AuthService calling Supabase signInWithOtp
 - [ ] T130 Add rate limiting (6 requests per hour per email)
@@ -258,10 +259,10 @@
 
 ### Error Handling & Loading States
 
-- [ ] T133 [P] Create ErrorBoundary component in src/components/shared/ErrorBoundary.tsx
-- [ ] T134 [P] Create LoadingSpinner component in src/components/shared/LoadingSpinner.tsx
-- [ ] T135 Add loading states to all auth forms (SignupForm, LoginForm, etc.)
-- [ ] T136 [P] Add error toast notifications for auth failures
+- [ ] T133 [P] Create ErrorBoundary component in src/components/shared/ErrorBoundary.tsx using ShadCN Alert
+- [ ] T134 [P] Create LoadingSpinner component in src/components/shared/LoadingSpinner.tsx (or use ShadCN Skeleton)
+- [ ] T135 Add loading states to all auth forms using ShadCN Button loading prop and form disabled states
+- [ ] T136 [P] Add error toast notifications for auth failures using ShadCN Toast/Sonner
 - [ ] T137 Add retry logic with exponential backoff for Supabase API calls
 - [ ] T138 Implement graceful degradation when Supabase is unavailable (show cached data)
 
