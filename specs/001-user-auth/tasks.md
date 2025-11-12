@@ -22,12 +22,12 @@
 
 **Purpose**: Project initialization and Supabase integration
 
-- [ ] T001 Install Supabase dependencies (@supabase/supabase-js, @supabase/ssr) and Supabase CLI
-- [ ] T002 [P] Create Supabase project (remote or local) and copy credentials to .env.local
-- [ ] T003 [P] Use Context7 to fetch Supabase SSR documentation for Next.js 15 App Router patterns
-- [ ] T004 Create Supabase client utilities in src/lib/supabase/client.ts (browser client)
-- [ ] T005 Create Supabase server client in src/lib/supabase/server.ts (for Server Components)
-- [ ] T006 Create Supabase middleware client in src/lib/supabase/middleware.ts (for session refresh)
+- [X] T001 Install Supabase dependencies (@supabase/supabase-js, @supabase/ssr) and Supabase CLI
+- [X] T002 [P] Create Supabase project (remote or local) and copy credentials to .env.local
+- [X] T003 [P] Use Context7 to fetch Supabase SSR documentation for Next.js 15 App Router patterns
+- [X] T004 Create Supabase client utilities in src/lib/supabase/client.ts (browser client)
+- [X] T005 Create Supabase server client in src/lib/supabase/server.ts (for Server Components)
+- [X] T006 Create Supabase middleware client in src/lib/supabase/middleware.ts (for session refresh)
 
 ---
 
