@@ -1,0 +1,628 @@
+openapi: 3.0.3
+info:
+  title: True Champion User Management API
+  description: |
+    User profile and league management endpoints. All endpoints require authentication.
+    Enforces data isolation - users can only access their own data.
+  version: 1.0.0
+  contact:
+    name: True Champion Team
+    email: support@truechampion.app
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development
+  - url: https://truechampion.app/api
+    description: Production
+
+tags:
+  - name: Profile
+    description: User profile operations
+  - name: Leagues
+    description: User league management
+
+security:
+  - CookieAuth: []
+
+paths:
+  /user/profile:
+    get:
+      tags:
+        - Profile
+      summary: Get current user's profile
+      description: Returns the authenticated user's profile information
+      operationId: getUserProfile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Profile
+      summary: Update user profile
+      description: Updates the authenticated user's profile information
+      operationId: updateUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/leagues:
+    get:
+      tags:
+        - Leagues
+      summary: Get user's leagues
+      description: |
+        Returns all leagues added by the authenticated user.
+        Supports filtering by active status and season year.
+      operationId: getUserLeagues
+      parameters:
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status (true = active only, false = inactive only, omit = all)
+        - name: season_year
+          in: query
+          schema:
+            type: integer
+            minimum: 2000
+            maximum: 2100
+          description: Filter by season year
+      responses:
+        '200':
+          description: Leagues retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leagues:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserLeague'
+                  total:
+                    type: integer
+                    example: 5
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Leagues
+      summary: Add a new league
+      description: |
+        Adds a new ESPN fantasy football league to the user's account.
+        Validates the ESPN league ID by fetching data from ESPN API.
+      operationId: addUserLeague
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLeagueRequest'
+      responses:
+        '201':
+          description: League added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLeague'
+        '400':
+          description: Invalid input or league ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_league_id:
+                  value:
+                    error: 'Invalid ESPN league ID or league not found'
+                    code: 'INVALID_LEAGUE_ID'
+                duplicate_league:
+                  value:
+                    error: 'This league is already added to your account'
+                    code: 'DUPLICATE_LEAGUE'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many league additions (rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/leagues/{leagueId}:
+    get:
+      tags:
+        - Leagues
+      summary: Get specific league details
+      description: Returns details for a specific league owned by the authenticated user
+      operationId: getUserLeagueById
+      parameters:
+        - name: leagueId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: League ID (UUID from user_leagues table)
+      responses:
+        '200':
+          description: League retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLeague'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - league belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: League not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Leagues
+      summary: Remove a league
+      description: |
+        Removes a league from the user's account (soft delete - sets is_active = false).
+        League data is retained and can be re-added later.
+      operationId: removeUserLeague
+      parameters:
+        - name: leagueId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: League ID (UUID from user_leagues table)
+      responses:
+        '200':
+          description: League removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'League removed successfully'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - league belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: League not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/leagues/{leagueId}/sync:
+    post:
+      tags:
+        - Leagues
+      summary: Manually sync league data
+      description: |
+        Triggers a manual sync of league data from ESPN API.
+        Rate limited to 1 sync per hour per league to avoid API abuse.
+      operationId: syncLeagueData
+      parameters:
+        - name: leagueId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: League ID (UUID from user_leagues table)
+      responses:
+        '202':
+          description: Sync initiated (processed in background)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'League data sync initiated'
+                  job_id:
+                    type: string
+                    format: uuid
+                    example: '456e7890-f12b-34c5-d678-901234567890'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - league belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: League not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Sync rate limit exceeded (1 per hour)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/auth-logs:
+    get:
+      tags:
+        - Profile
+      summary: Get user's authentication logs
+      description: |
+        Returns recent authentication events for the user (last 90 days).
+        Useful for security monitoring and account activity review.
+      operationId: getUserAuthLogs
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Number of logs to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Pagination offset
+        - name: event_type
+          in: query
+          schema:
+            type: string
+            enum: [login, logout, failed_login, password_reset_request, password_reset_complete, email_verified]
+          description: Filter by event type
+      responses:
+        '200':
+          description: Auth logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuthLog'
+                  total:
+                    type: integer
+                    example: 127
+                  limit:
+                    type: integer
+                    example: 50
+                  offset:
+                    type: integer
+                    example: 0
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: sb-access-token
+
+  schemas:
+    UserProfile:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: '123e4567-e89b-12d3-a456-426614174000'
+        email:
+          type: string
+          format: email
+          example: 'user@example.com'
+        full_name:
+          type: string
+          nullable: true
+          example: 'John Doe'
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+          example: 'https://example.com/avatars/user123.jpg'
+        email_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-11-12T10:30:00Z'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-11-01T08:15:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-11-12T09:20:00Z'
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: 'Jane Smith'
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+          example: 'https://example.com/avatars/newavatar.jpg'
+
+    UserLeague:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '789e0123-a45b-67c8-d901-234567890abc'
+        user_id:
+          type: string
+          format: uuid
+          example: '123e4567-e89b-12d3-a456-426614174000'
+        espn_league_id:
+          type: string
+          example: '1044648461'
+        league_name:
+          type: string
+          nullable: true
+          example: 'Fantasy Football 2025'
+        season_year:
+          type: integer
+          example: 2025
+        added_at:
+          type: string
+          format: date-time
+          example: '2025-11-01T10:00:00Z'
+        last_synced_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-11-12T08:30:00Z'
+        is_active:
+          type: boolean
+          example: true
+
+    AddLeagueRequest:
+      type: object
+      required:
+        - espn_league_id
+        - season_year
+      properties:
+        espn_league_id:
+          type: string
+          pattern: '^\d+$'
+          example: '1044648461'
+          description: ESPN league ID (numeric string)
+        season_year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+          example: 2025
+          description: Season year
+        espn_swid:
+          type: string
+          nullable: true
+          example: '{E69E2F1C-7931-47C0-B4EE-2B439DDBC136}'
+          description: ESPN SWID cookie (optional, for private leagues)
+        espn_s2:
+          type: string
+          nullable: true
+          example: 'AEBxxxxxxxxxx...'
+          description: ESPN S2 session token (optional, for private leagues)
+
+    AuthLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '321e9876-f54c-21d0-e987-654321098765'
+        event_type:
+          type: string
+          enum:
+            - signup
+            - login
+            - logout
+            - failed_login
+            - password_reset_request
+            - password_reset_complete
+            - email_verification_sent
+            - email_verified
+            - oauth_login
+            - token_refresh
+            - rate_limit_exceeded
+          example: 'login'
+        ip_address:
+          type: string
+          format: ipv4
+          nullable: true
+          example: '192.168.1.100'
+        user_agent:
+          type: string
+          nullable: true
+          example: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)...'
+        success:
+          type: boolean
+          example: true
+        error_message:
+          type: string
+          nullable: true
+          example: null
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+          example:
+            provider: 'google'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-11-12T09:45:00Z'
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          example: 'Resource not found'
+        code:
+          type: string
+          example: 'NOT_FOUND'
+        details:
+          type: object
+          nullable: true
+
+    RateLimitErrorResponse:
+      type: object
+      required:
+        - error
+        - code
+        - retry_after
+      properties:
+        error:
+          type: string
+          example: 'Rate limit exceeded'
+        code:
+          type: string
+          example: 'RATE_LIMIT_EXCEEDED'
+        retry_after:
+          type: integer
+          description: Seconds until rate limit resets
+          example: 3600
+        reset_at:
+          type: string
+          format: date-time
+          example: '2025-11-12T12:00:00Z'
