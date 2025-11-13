@@ -1,17 +1,10 @@
-import { MainLayout, ScoreboardHeader } from "@/components/shared";
-import { DashboardClient } from "@/components/dashboard/dashboard-client";
+import { MainLayout } from "@/components/shared";
+import { LandingPage } from "@/components/landing/LandingPage";
 
 export default function Home() {
   return (
     <MainLayout>
-      <ScoreboardHeader
-        title="TRUE CHAMPION"
-        subtitle="Fantasy Football's Ultimate Truth Detector"
-        lastUpdated="Live Data"
-        seasonYear={2025}
-      />
-
-      <DashboardClient />
+      <LandingPage />
     </MainLayout>
   );
 }

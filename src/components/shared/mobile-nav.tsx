@@ -17,7 +17,7 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
 
   const navItems = [
-    { href: "/", label: "STANDINGS" },
+    { href: "/dashboard", label: "STANDINGS" },
     { href: "/weeks", label: "WEEKS" },
     { href: "/about", label: "ABOUT" },
   ];
@@ -67,6 +67,16 @@ export function MobileNav() {
             </Link>
           ))}
           <TeamsNavMobile onNavigate={() => setOpen(false)} />
+          <Link
+            href="/login"
+            onClick={() => setOpen(false)}
+          >
+            <Button
+              className="retro-button w-full border-2 border-primary bg-primary/20 text-primary hover:bg-primary/30"
+            >
+              SIGN IN
+            </Button>
+          </Link>
         </nav>
       </SheetContent>
     </Sheet>

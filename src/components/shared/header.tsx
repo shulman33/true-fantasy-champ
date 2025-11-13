@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MobileNav } from "./mobile-nav";
 import { TeamsNav } from "./teams-nav";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
@@ -16,7 +17,7 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
             <Link
-              href="/"
+              href="/dashboard"
               className="text-sm hover:text-primary transition-colors py-3"
             >
               STANDINGS
@@ -33,6 +34,15 @@ export function Header() {
               className="text-sm hover:text-primary transition-colors py-3"
             >
               ABOUT
+            </Link>
+            <Link href="/login">
+              <Button
+                variant="outline"
+                size="sm"
+                className="retro-button border-primary text-xs text-primary hover:bg-primary/10"
+              >
+                SIGN IN
+              </Button>
             </Link>
           </nav>
 
