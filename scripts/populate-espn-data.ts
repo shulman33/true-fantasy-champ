@@ -5,7 +5,15 @@
 
 import { ESPNApiService } from '../src/services/espn-api';
 import { trueChampionService } from '../src/services/true-champion';
-import { redis } from '../src/lib/redis';
+import {
+  setWeeklyScores,
+  setTeamMetadata,
+  setTrueRecord,
+  setActualStandings,
+  setLastUpdate,
+  getTeamMetadata,
+  getActualStandings,
+} from '../src/lib/redis';
 
 async function populateESPNData() {
   console.log('🏈 Starting ESPN data population...\n');
@@ -30,7 +38,7 @@ async function populateESPNData() {
         const scores = espnService.parseWeeklyScores(response);
 
         // Store weekly scores in Redis
-        await redis.setWeeklyScores(season, week, scores);
+        await setWeeklyScores(season, week, scores);
 
         weeklyData.push({ week, scores });
         console.log(`  ✓ Week ${week}: ${Object.keys(scores).length} teams, scores stored`);
@@ -38,7 +46,7 @@ async function populateESPNData() {
         // Store team metadata (only need to do this once)
         if (week === 1) {
           const teamMetadata = espnService.parseTeamMetadata(response);
-          await redis.setTeamMetadata(leagueId, teamMetadata);
+          await setTeamMetadata(leagueId, teamMetadata);
           console.log(`  ✓ Team metadata stored for ${Object.keys(teamMetadata).length} teams`);
         }
 
@@ -56,11 +64,11 @@ async function populateESPNData() {
     const leagueData = await espnService.fetchLeagueData();
     const actualStandings = espnService.parseActualStandings(leagueData);
     console.log('  Sample standing:', JSON.stringify(actualStandings[0], null, 2));
-    await redis.setActualStandings(season, actualStandings);
+    await setActualStandings(season, actualStandings);
     console.log(`  ✓ Stored actual standings for ${actualStandings.length} teams`);
 
     // Verify we can retrieve it
-    const retrieved = await redis.getActualStandings(season);
+    const retrieved = await getActualStandings(season);
     console.log(`  ✓ Verified retrieval: ${retrieved ? retrieved.length : 'null'} teams`);
 
     // Step 2: Calculate true records
@@ -69,17 +77,17 @@ async function populateESPNData() {
 
     // Store true records in Redis
     for (const [teamId, record] of Object.entries(trueRecords)) {
-      await redis.setTrueRecord(season, teamId, record);
+      await setTrueRecord(season, teamId, record);
     }
     console.log(`  ✓ Stored true records for ${Object.keys(trueRecords).length} teams`);
 
     // Step 3: Set last update timestamp
-    await redis.setLastUpdate(leagueId, new Date().toISOString());
+    await setLastUpdate(leagueId, new Date().toISOString());
     console.log('  ✓ Set last update timestamp');
 
     // Step 4: Display sample data
     console.log('\n📈 Top 5 Teams by True Record:');
-    const teamMetadata = await redis.getTeamMetadata(leagueId);
+    const teamMetadata = await getTeamMetadata(leagueId);
     const sortedTeams = Object.entries(trueRecords)
       .map(([teamId, record]) => {
         const metadata = teamMetadata?.[teamId] || { name: `Team ${teamId}`, owner: '', abbrev: '' };

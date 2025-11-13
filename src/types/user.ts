@@ -210,7 +210,7 @@ export type LeagueCredentials = ESPNCredentials | YahooCredentials | SleeperCred
  * Type guard for ESPN credentials
  */
 export function isESPNCredentials(
-  credentials: Record<string, unknown>
+  credentials: any
 ): credentials is ESPNCredentials {
   return 'swid' in credentials && 'espn_s2' in credentials
 }
@@ -219,7 +219,7 @@ export function isESPNCredentials(
  * Type guard for Yahoo credentials
  */
 export function isYahooCredentials(
-  credentials: Record<string, unknown>
+  credentials: any
 ): credentials is YahooCredentials {
   return (
     'access_token' in credentials &&
@@ -232,7 +232,7 @@ export function isYahooCredentials(
  * Type guard for Sleeper credentials
  */
 export function isSleeperCredentials(
-  credentials: Record<string, unknown>
+  credentials: any
 ): credentials is SleeperCredentials {
   // Sleeper credentials are optional, so this is always true for now
   return true

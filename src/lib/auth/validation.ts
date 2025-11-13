@@ -132,12 +132,12 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
  */
 export const addLeagueSchema = z.object({
   platform: z.enum(['espn', 'sleeper', 'yahoo'], {
-    errorMap: () => ({ message: 'Platform must be espn, sleeper, or yahoo' }),
+    message: 'Platform must be espn, sleeper, or yahoo',
   }),
   platformLeagueId: z.string().min(1, 'League ID is required'),
   season: z.number().int().min(2000).max(2100, 'Invalid season year'),
   leagueName: z.string().optional(),
-  credentials: z.record(z.any()).optional(), // Platform-specific credentials
+  credentials: z.record(z.string(), z.any()).optional(), // Platform-specific credentials
 })
 
 export type AddLeagueInput = z.infer<typeof addLeagueSchema>

@@ -5,7 +5,12 @@
 
 import { ESPNApiService } from '../src/services/espn-api';
 import { trueChampionService } from '../src/services/true-champion';
-import { redis } from '../src/lib/redis';
+import {
+  setWeeklyScores,
+  setTeamMetadata,
+  setTrueRecord,
+  setLastUpdate,
+} from '../src/lib/redis';
 
 async function populateTestData() {
   console.log('🚀 Starting test data population...\n');
@@ -27,13 +32,13 @@ async function populateTestData() {
       weeklyData.push({ week, scores });
 
       // Store weekly scores in Redis
-      await redis.setWeeklyScores(season, week, scores);
+      await setWeeklyScores(season, week, scores);
       console.log(`  ✓ Week ${week}: ${Object.keys(scores).length} teams`);
 
       // Store team metadata (only need to do this once)
       if (week === 1) {
         const teamMetadata = espnService.parseTeamMetadata(mockResponse);
-        await redis.setTeamMetadata(leagueId, teamMetadata);
+        await setTeamMetadata(leagueId, teamMetadata);
         console.log(`  ✓ Team metadata stored for ${Object.keys(teamMetadata).length} teams`);
       }
     }
@@ -44,12 +49,12 @@ async function populateTestData() {
 
     // Store true records in Redis
     for (const [teamId, record] of Object.entries(trueRecords)) {
-      await redis.setTrueRecord(season, teamId, record);
+      await setTrueRecord(season, teamId, record);
     }
     console.log(`  ✓ Stored true records for ${Object.keys(trueRecords).length} teams`);
 
     // Step 3: Set last update timestamp
-    await redis.setLastUpdate(leagueId, new Date().toISOString());
+    await setLastUpdate(leagueId, new Date().toISOString());
     console.log('  ✓ Set last update timestamp');
 
     // Step 4: Display sample data

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+import { getAllTrueRecords, getLastUpdate } from '@/lib/redis';
 
 /**
  * GET /api/standings
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const season = parseInt(process.env.ESPN_SEASON || '2025');
 
     // Get all true records for the season
-    const trueRecords = await redis.getAllTrueRecords(season);
+    const trueRecords = await getAllTrueRecords(season);
 
     if (!trueRecords || Object.keys(trueRecords).length === 0) {
       return NextResponse.json(
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       });
 
     // Get last update time
-    const lastUpdate = await redis.getLastUpdate(
+    const lastUpdate = await getLastUpdate(
       process.env.ESPN_LEAGUE_ID || ''
     );
 

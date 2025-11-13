@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+import {
+  getAllTrueRecords,
+  getTeamMetadata,
+  getActualStandings,
+  getAllWeeklyScores,
+} from '@/lib/redis';
 import {
   calculateRecordStats,
   calculateAveragePoints,
@@ -27,9 +32,9 @@ export async function GET(
 
     // Fetch all required data in parallel
     const [trueRecords, teamMetadata, actualStandings] = await Promise.all([
-      redis.getAllTrueRecords(season),
-      redis.getTeamMetadata(leagueId),
-      redis.getActualStandings(season.toString()),
+      getAllTrueRecords(season),
+      getTeamMetadata(leagueId),
+      getActualStandings(season.toString()),
     ]);
 
     // Check if team exists
@@ -54,7 +59,7 @@ export async function GET(
     const currentWeek = weekNumbers.length > 0 ? Math.max(...weekNumbers) : 1;
 
     // Get all weekly scores for statistics and weekly breakdown
-    const weeklyScoresData = await redis.getAllWeeklyScores(
+    const weeklyScoresData = await getAllWeeklyScores(
       season.toString(),
       currentWeek
     );

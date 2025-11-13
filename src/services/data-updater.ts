@@ -6,7 +6,13 @@
 
 import { ESPNApiService } from './espn-api';
 import { trueChampionService } from './true-champion';
-import { redis } from '../lib/redis';
+import {
+  setWeeklyScores,
+  setTeamMetadata,
+  setActualStandings,
+  setTrueRecord,
+  setLastUpdate,
+} from '../lib/redis';
 
 export interface UpdateOptions {
   maxWeek?: number; // Auto-detect current week if not provided
@@ -76,7 +82,7 @@ export async function updateAllData(
         const scores = espnService.parseWeeklyScores(response);
 
         // Store weekly scores in Redis
-        await redis.setWeeklyScores(season, week, scores);
+        await setWeeklyScores(season, week, scores);
 
         weeklyData.push({ week, scores });
         weeksProcessed++;
@@ -87,7 +93,7 @@ export async function updateAllData(
         // Store team metadata (only need to do this once)
         if (week === 1) {
           const teamMetadata = espnService.parseTeamMetadata(response);
-          await redis.setTeamMetadata(leagueId, teamMetadata);
+          await setTeamMetadata(leagueId, teamMetadata);
           teamsUpdated = Object.keys(teamMetadata).length;
           log(
             `  ✓ Team metadata stored for ${Object.keys(teamMetadata).length} teams`
@@ -109,7 +115,7 @@ export async function updateAllData(
     try {
       const leagueData = await espnService.fetchLeagueData();
       const actualStandings = espnService.parseActualStandings(leagueData);
-      await redis.setActualStandings(season, actualStandings);
+      await setActualStandings(season, actualStandings);
       log(`  ✓ Stored actual standings for ${actualStandings.length} teams`);
     } catch (error) {
       const errorMsg = `Error fetching actual standings: ${error instanceof Error ? error.message : error}`;
@@ -126,7 +132,7 @@ export async function updateAllData(
 
         // Store true records in Redis
         for (const [teamId, record] of Object.entries(trueRecords)) {
-          await redis.setTrueRecord(season, teamId, record);
+          await setTrueRecord(season, teamId, record);
         }
         log(
           `  ✓ Stored true records for ${Object.keys(trueRecords).length} teams`
@@ -144,7 +150,7 @@ export async function updateAllData(
 
     // Step 4: Set last update timestamp
     const lastUpdate = new Date().toISOString();
-    await redis.setLastUpdate(leagueId, lastUpdate);
+    await setLastUpdate(leagueId, lastUpdate);
     log('  ✓ Set last update timestamp');
 
     const duration = Date.now() - startTime;

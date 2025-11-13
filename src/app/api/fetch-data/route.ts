@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { espnApi } from '@/services/espn-api';
-import { redis } from '@/lib/redis';
+import {
+  getWeeklyScores,
+  setWeeklyScores,
+  setActualStandings,
+  setLastUpdate,
+  getLastUpdate,
+} from '@/lib/redis';
 import { updateAllData } from '@/services/data-updater';
 
 // Request body schema
@@ -59,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     // Check if we need to refresh
     if (!forceRefresh) {
-      const cached = await redis.getWeeklyScores(season, targetWeek);
+      const cached = await getWeeklyScores(season, targetWeek);
       if (cached && Object.keys(cached).length > 0) {
         return NextResponse.json({
           message: 'Data already up to date',
@@ -81,12 +87,12 @@ export async function POST(request: NextRequest) {
 
     // Store in Redis
     await Promise.all([
-      redis.setWeeklyScores(season, targetWeek, scores),
-      redis.setActualStandings(season.toString(), actualStandings),
+      setWeeklyScores(season, targetWeek, scores),
+      setActualStandings(season.toString(), actualStandings),
     ]);
 
     // Update last update timestamp
-    await redis.setLastUpdate(
+    await setLastUpdate(
       process.env.ESPN_LEAGUE_ID || '',
       new Date().toISOString()
     );
@@ -136,7 +142,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const leagueId = process.env.ESPN_LEAGUE_ID || '';
-    const lastUpdate = await redis.getLastUpdate(leagueId);
+    const lastUpdate = await getLastUpdate(leagueId);
     const currentWeek = await espnApi.getCurrentWeek();
 
     return NextResponse.json({

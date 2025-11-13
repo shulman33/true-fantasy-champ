@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { espnApi } from '@/services/espn-api';
-import { redis } from '@/lib/redis';
+import { getWeeklyScores, setWeeklyScores } from '@/lib/redis';
 
 // Validate week parameter
 const WeekParamSchema = z.object({
@@ -27,7 +27,7 @@ export async function GET(
 
     // Try to get from cache first
     const cacheKey = `weekly_scores:${process.env.ESPN_SEASON}:${week}`;
-    const cached = await redis.getWeeklyScores(
+    const cached = await getWeeklyScores(
       parseInt(process.env.ESPN_SEASON || '2025'),
       week
     );
@@ -44,7 +44,7 @@ export async function GET(
     const scores = await espnApi.getWeeklyScores(week);
 
     // Store in cache
-    await redis.setWeeklyScores(
+    await setWeeklyScores(
       parseInt(process.env.ESPN_SEASON || '2025'),
       week,
       scores
