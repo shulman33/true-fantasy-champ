@@ -114,22 +114,22 @@
 
 ### Implementation for User Story 2
 
-- [ ] T047 [US2] Use Context7 to fetch Supabase Auth documentation for login and session patterns
-- [ ] T048 [P] [US2] Create login page UI in src/app/(auth)/login/page.tsx using ShadCN Card
-- [ ] T049 [P] [US2] Create LoginForm component in src/components/auth/LoginForm.tsx using ShadCN Form, Input, Button components
-- [ ] T050 [US2] Create POST /api/auth/login route handler in src/app/api/auth/login/route.ts
-- [ ] T051 [US2] Implement login logic in AuthService calling Supabase signInWithPassword
-- [ ] T052 [US2] Add validation for login request (email format, non-empty password)
-- [ ] T053 [US2] Add rate limiting to login endpoint (5 failed attempts per 15 min per IP)
-- [ ] T054 [US2] Implement session caching in Redis for performance (session:{user_id})
-- [ ] T055 [P] [US2] Create POST /api/auth/logout route handler in src/app/api/auth/logout/route.ts
-- [ ] T056 [P] [US2] Implement logout logic to clear Supabase session and Redis cache
-- [ ] T057 [P] [US2] Create GET /api/auth/session route handler in src/app/api/auth/session/route.ts
-- [ ] T058 [US2] Create useAuth hook in src/hooks/useAuth.ts for client-side auth state
-- [ ] T059 [P] [US2] Create useSession hook in src/hooks/useSession.ts for session management
-- [ ] T060 [US2] Update middleware to redirect unauthenticated users to /login for protected routes
-- [ ] T061 [US2] Add error handling for invalid credentials, unverified email, and expired sessions
-- [ ] T062 [US2] Test login flow: login → dashboard → navigate pages → close browser → return → still logged in
+- [X] T047 [US2] Use Context7 to fetch Supabase Auth documentation for login and session patterns
+- [X] T048 [P] [US2] Create login page UI in src/app/(auth)/login/page.tsx using ShadCN Card
+- [X] T049 [P] [US2] Create LoginForm component in src/components/auth/LoginForm.tsx using ShadCN Form, Input, Button components
+- [X] T050 [US2] Create POST /api/auth/login route handler in src/app/api/auth/login/route.ts
+- [X] T051 [US2] Implement login logic in AuthService calling Supabase signInWithPassword
+- [X] T052 [US2] Add validation for login request (email format, non-empty password)
+- [X] T053 [US2] Add rate limiting to login endpoint (5 failed attempts per 15 min per IP)
+- [X] T054 [US2] Implement session caching in Redis for performance (session:{user_id})
+- [X] T055 [P] [US2] Create POST /api/auth/logout route handler in src/app/api/auth/logout/route.ts
+- [X] T056 [P] [US2] Implement logout logic to clear Supabase session and Redis cache
+- [X] T057 [P] [US2] Create GET /api/auth/session route handler in src/app/api/auth/session/route.ts
+- [X] T058 [US2] Create useAuth hook in src/hooks/useAuth.ts for client-side auth state
+- [X] T059 [P] [US2] Create useSession hook in src/hooks/useSession.ts for session management
+- [X] T060 [US2] Update middleware to redirect unauthenticated users to /login for protected routes
+- [X] T061 [US2] Add error handling for invalid credentials, unverified email, and expired sessions
+- [X] T062 [US2] Test login flow: login → dashboard → navigate pages → close browser → return → still logged in
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -183,7 +183,7 @@
 - [ ] T087 [US4] Implement addLeague in UserService with ESPN API validation
 - [ ] T088 [US4] Implement removeLeague in UserService (soft delete: set is_active = false)
 - [ ] T089 [US4] Implement syncLeague in UserService to trigger data update job
-- [ ] T090 [US4] Add validation for ESP N league ID format (numeric string)
+- [ ] T090 [US4] Add validation for ESPN league ID format (numeric string)
 - [ ] T091 [US4] Add rate limiting to league sync (1 sync per hour per league)
 - [ ] T092 [P] [US4] Create leagues list page in src/app/(authenticated)/leagues/page.tsx
 - [ ] T093 [P] [US4] Update dashboard page in src/app/(authenticated)/dashboard/page.tsx to use selected league
