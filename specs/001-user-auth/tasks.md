@@ -90,17 +90,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T036 [US1] Use Context7 to fetch Supabase Auth documentation for signup patterns
-- [ ] T037 [P] [US1] Create signup page UI in src/app/(auth)/signup/page.tsx with Client Component using ShadCN Card
-- [ ] T038 [P] [US1] Create SignupForm component in src/components/auth/SignupForm.tsx using ShadCN Form, Input, Button components
+- [X] T036 [US1] Use Context7 to fetch Supabase Auth documentation for signup patterns
+- [X] T037 [P] [US1] Create signup page UI in src/app/(auth)/signup/page.tsx with Client Component using ShadCN Card
+- [X] T038 [P] [US1] Create SignupForm component in src/components/auth/SignupForm.tsx using ShadCN Form, Input, Button components
 - [ ] T039 [US1] Create POST /api/auth/signup route handler in src/app/api/auth/signup/route.ts
-- [ ] T040 [US1] Implement signup logic in AuthService (src/services/auth-service.ts) calling Supabase Auth
-- [ ] T041 [US1] Add validation for signup request (email format, password strength) using Zod schemas
-- [ ] T042 [P] [US1] Create verify-email page in src/app/(auth)/verify-email/page.tsx for post-signup confirmation
-- [ ] T043 [P] [US1] Create POST /api/auth/resend-verification route in src/app/api/auth/resend-verification/route.ts
-- [ ] T044 [US1] Add rate limiting to signup endpoint (5 attempts per 15 min per IP)
-- [ ] T045 [US1] Add error handling for duplicate email, weak password, and validation errors
-- [ ] T046 [US1] Test signup flow: register → receive email → verify → account active
+- [X] T040 [US1] Implement signup logic in AuthService (src/services/auth-service.ts) calling Supabase Auth
+- [X] T041 [US1] Add validation for signup request (email format, password strength) using Zod schemas
+- [X] T042 [P] [US1] Create verify-email page in src/app/(auth)/verify-email/page.tsx for post-signup confirmation
+- [X] T043 [P] [US1] Create POST /api/auth/resend-verification route in src/app/api/auth/resend-verification/route.ts
+- [X] T044 [US1] Add rate limiting to signup endpoint (5 attempts per 15 min per IP)
+- [X] T045 [US1] Add error handling for duplicate email, weak password, and validation errors
+- [x] T046 [US1] Test signup flow: register → receive email → verify → account active
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
