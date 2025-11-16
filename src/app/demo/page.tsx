@@ -3,12 +3,13 @@
 import { Trophy } from "lucide-react";
 import { MainLayout, ScoreboardHeader } from "@/components/shared";
 import {
-  StatsGrid,
   TeamStandingsGrid,
   TrueStandingsTable,
   RecordComparisonGrid,
   RecordComparisonTable,
+  CollapsibleStatsGrid,
 } from "@/components/dashboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MOCK_TEAMS,
   MOCK_LEAGUE_INFO,
@@ -79,37 +80,45 @@ export default function DemoPage() {
         seasonYear={MOCK_LEAGUE_INFO.season}
       />
 
-      <div className="space-y-8">
+      <div className="space-y-12">
         {/* Last Updated Info */}
-        <div className="text-xs sm:text-sm text-gray-400 font-mono">
-          Last updated: {new Date(MOCK_LEAGUE_INFO.lastUpdated).toLocaleString()}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
+          <div className="text-xs sm:text-sm text-gray-400 font-mono wrap-break-word">
+            Last updated: {new Date(MOCK_LEAGUE_INFO.lastUpdated).toLocaleString()}
+          </div>
         </div>
 
-        {/* Stats Grid */}
-        <StatsGrid
+        {/* Collapsible Stats Grid */}
+        <CollapsibleStatsGrid
           luckiest={stats.luckiest}
           unluckiest={stats.unluckiest}
           mostConsistent={stats.mostConsistent}
           highestScoring={stats.highestScoring}
         />
 
-        {/* True Standings - Mobile Card Grid (< 1024px) / Desktop Table (>= 1024px) */}
-        <div className="block lg:hidden">
-          <TeamStandingsGrid standings={formattedStandings} />
-        </div>
+        {/* Tabbed Tables - Desktop (>= 1024px) */}
         <div className="hidden lg:block">
-          <TrueStandingsTable standings={formattedStandings} />
+          <Tabs defaultValue="standings" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="standings">True Standings</TabsTrigger>
+              <TabsTrigger value="comparison">Luck Comparison</TabsTrigger>
+            </TabsList>
+            <TabsContent value="standings">
+              <TrueStandingsTable standings={formattedStandings} />
+            </TabsContent>
+            <TabsContent value="comparison">
+              <RecordComparisonTable
+                trueStandings={formattedStandings}
+                actualStandings={actualStandings}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
 
-        {/* Record Comparison - Mobile Card Grid (< 1024px) / Desktop Table (>= 1024px) */}
-        <div className="block lg:hidden">
+        {/* Mobile Card Grids (< 1024px) */}
+        <div className="block lg:hidden space-y-12">
+          <TeamStandingsGrid standings={formattedStandings} />
           <RecordComparisonGrid
-            trueStandings={formattedStandings}
-            actualStandings={actualStandings}
-          />
-        </div>
-        <div className="hidden lg:block">
-          <RecordComparisonTable
             trueStandings={formattedStandings}
             actualStandings={actualStandings}
           />
