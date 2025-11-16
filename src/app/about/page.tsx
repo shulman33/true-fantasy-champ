@@ -7,10 +7,7 @@ import {
   Zap,
   Users,
   Calendar,
-  ChevronRight,
-  GitBranch,
-  Database,
-  Code
+  ChevronRight
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -192,55 +189,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Technology Stack Section */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Code className="w-8 h-8 text-primary" />
-          <h2 className="text-xl md:text-2xl text-retro text-primary">
-            TECHNOLOGY STACK
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-4">
-          {/* Frontend */}
-          <div className="retro-card p-6 space-y-3">
-            <GitBranch className="w-8 h-8 text-accent mb-2" />
-            <h3 className="text-base md:text-lg text-retro">FRONTEND</h3>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Next.js 15</li>
-              <li>• React 18</li>
-              <li>• TypeScript</li>
-              <li>• Tailwind CSS</li>
-              <li>• shadcn/ui</li>
-            </ul>
-          </div>
-
-          {/* Backend */}
-          <div className="retro-card p-6 space-y-3">
-            <Database className="w-8 h-8 text-accent mb-2" />
-            <h3 className="text-base md:text-lg text-retro">BACKEND</h3>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Upstash Redis</li>
-              <li>• ESPN Fantasy API</li>
-              <li>• Vercel Cron Jobs</li>
-              <li>• Zod Validation</li>
-            </ul>
-          </div>
-
-          {/* Deployment */}
-          <div className="retro-card p-6 space-y-3">
-            <Zap className="w-8 h-8 text-accent mb-2" />
-            <h3 className="text-base md:text-lg text-retro">DEPLOYMENT</h3>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Vercel</li>
-              <li>• Edge Functions</li>
-              <li>• Auto Updates</li>
-              <li>• Global CDN</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
       {/* About Creator Section */}
       <section className="retro-card p-6 md:p-8 space-y-4">
         <div className="flex items-center gap-3 mb-4">
@@ -250,12 +198,16 @@ export default function AboutPage() {
           </h2>
         </div>
         <p className="text-sm md:text-base leading-relaxed">
-          True Champion was created by <span className="text-accent font-bold">Sam Shulman</span>, a fantasy football
-          enthusiast and developer who got tired of losing matchups despite having consistently high scores.
+          I'm <span className="text-accent font-bold">Sam Shulman</span>, and I made this because a friend in my league
+          somehow made the playoffs with a garbage team. He got ridiculously lucky with his schedule all season—kept
+          playing the worst teams at the right time while putting up mediocre scores every week.
         </p>
         <p className="text-sm md:text-base leading-relaxed">
-          After one too many "unlucky" seasons, Sam built this tool to settle the debate once and for all:
-          <span className="text-primary font-bold"> who's REALLY the best team?</span>
+          Listening to him brag about making playoffs was unbearable, so I built True Champion to prove what everyone
+          already knew: <span className="text-primary font-bold">his team sucks and he didn't deserve it.</span>
+        </p>
+        <p className="text-sm md:text-base leading-relaxed">
+          Now the numbers don't lie. Schedule luck is exposed. And yes, he's <span className="text-destructive font-bold">still salty</span> about it.
         </p>
       </section>
 

@@ -30,6 +30,8 @@ import type {
   ResendVerificationResult,
   SessionValidationResult,
   AuthEventType,
+  OAuthConfig,
+  OAuthResult,
 } from '@/types/auth'
 import { mapSupabaseError, createAuthError } from '@/types/auth'
 
@@ -156,6 +158,59 @@ export async function signIn(payload: LoginPayload): Promise<LoginResult> {
     return {
       success: false,
       error: createAuthError('server_error', 'An unexpected error occurred during login'),
+    }
+  }
+}
+
+/**
+ * Sign in with OAuth provider (Google, GitHub, Apple)
+ *
+ * @param config - OAuth provider configuration
+ * @returns OAuthResult with redirect URL or error
+ */
+export async function signInWithOAuth(config: OAuthConfig): Promise<OAuthResult> {
+  try {
+    const supabase = await createClient()
+
+    // Call Supabase Auth signInWithOAuth
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: config.provider,
+      options: {
+        redirectTo: `${getSiteUrl()}/auth/callback`,
+        scopes: config.scopes,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+
+    if (error) {
+      // Log the auth event (failure)
+      await logAuthEvent({
+        type: 'failed_login',
+        method: config.provider,
+        success: false,
+        error: error.message,
+      })
+
+      return {
+        success: false,
+        error: mapSupabaseError(error),
+      }
+    }
+
+    // Note: OAuth login event will be logged in the callback handler after successful authentication
+
+    return {
+      success: true,
+      url: data.url,
+    }
+  } catch (error) {
+    console.error('[AuthService] signInWithOAuth error:', error)
+    return {
+      success: false,
+      error: createAuthError('server_error', 'An unexpected error occurred during OAuth login'),
     }
   }
 }

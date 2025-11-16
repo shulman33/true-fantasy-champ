@@ -54,16 +54,22 @@ export default function DemoPage() {
   return (
     <MainLayout>
       {/* Demo Banner */}
-      <div className="mb-6 rounded-lg border-2 border-retro-yellow bg-retro-yellow/10 p-4 text-center">
-        <p className="flex items-center justify-center gap-2 text-xs text-retro-yellow md:text-sm">
-          <Trophy className="h-4 w-4" aria-hidden="true" />
-          <span className="font-bold">DEMO MODE</span> - This is sample data
-          to show you how True Champion works.{" "}
-          <Link href="/signup" className="underline hover:text-retro-yellow/80">
-            Sign up
-          </Link>{" "}
-          to connect your real league!
-        </p>
+      <div className="mb-6 rounded-lg border-2 border-retro-yellow bg-retro-yellow/10 p-4">
+        <div className="flex flex-col items-center justify-center gap-2 text-xs text-retro-yellow md:flex-row md:flex-wrap md:gap-x-2 md:text-sm">
+          <span className="flex items-center gap-2">
+            <Trophy className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="font-bold">DEMO MODE</span>
+          </span>
+          <span className="text-center">
+            - This is sample data to show you how True Champion works.
+          </span>
+          <span className="text-center md:whitespace-nowrap">
+            <Link href="/signup" className="underline hover:text-retro-yellow/80">
+              Sign up
+            </Link>{" "}
+            to connect your real league!
+          </span>
+        </div>
       </div>
 
       <ScoreboardHeader
