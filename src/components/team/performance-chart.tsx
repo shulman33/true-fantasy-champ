@@ -1,6 +1,16 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from 'recharts';
 
 interface PerformanceChartProps {
   weeklyPerformance: Array<{
@@ -17,50 +27,55 @@ export function PerformanceChart({ weeklyPerformance }: PerformanceChartProps) {
     return null;
   }
 
-  // Calculate chart dimensions and data
-  const maxScore = Math.max(...weeklyPerformance.map((w) => w.score));
-  const minScore = Math.min(...weeklyPerformance.map((w) => w.score));
-  const scoreRange = maxScore - minScore || 100; // Prevent division by zero
-  const padding = scoreRange * 0.1; // 10% padding
-
-  const chartHeight = 300;
-  const chartWidth = 800;
-  const chartPadding = { top: 20, right: 40, bottom: 40, left: 60 };
-  const innerHeight = chartHeight - chartPadding.top - chartPadding.bottom;
-  const innerWidth = chartWidth - chartPadding.left - chartPadding.right;
-
-  // Calculate scale factors
-  const yMin = minScore - padding;
-  const yMax = maxScore + padding;
-  const yRange = yMax - yMin;
-
-  // Generate points for the score line
-  const scorePoints = weeklyPerformance.map((week, index) => {
-    const x = chartPadding.left + (index / (weeklyPerformance.length - 1 || 1)) * innerWidth;
-    const y = chartPadding.top + innerHeight - ((week.score - yMin) / yRange) * innerHeight;
-    return { x, y, week };
-  });
-
-  // Create SVG path for the line
-  const scorePath = scorePoints
-    .map((point, index) => {
-      if (index === 0) {
-        return `M ${point.x},${point.y}`;
-      }
-      return `L ${point.x},${point.y}`;
-    })
-    .join(' ');
-
-  // Generate Y-axis labels (5 ticks)
-  const yAxisTicks = Array.from({ length: 5 }, (_, i) => {
-    const value = yMin + (yRange / 4) * i;
-    const y = chartPadding.top + innerHeight - ((value - yMin) / yRange) * innerHeight;
-    return { value, y };
+  // Transform data for Recharts format
+  const chartData = weeklyPerformance.map((week) => {
+    const totalGames = week.wins + week.losses;
+    const winPct = totalGames > 0 ? (week.wins / totalGames) * 100 : 0;
+    return {
+      week: week.week,
+      score: week.score,
+      wins: week.wins,
+      losses: week.losses,
+      winPct,
+      isWinningWeek: winPct >= 50,
+    };
   });
 
   // Calculate average score for reference line
   const avgScore = weeklyPerformance.reduce((sum, w) => sum + w.score, 0) / weeklyPerformance.length;
-  const avgY = chartPadding.top + innerHeight - ((avgScore - yMin) / yRange) * innerHeight;
+
+  // Custom dot component to color-code by win percentage
+  const CustomDot = (props: any) => {
+    const { cx, cy, payload } = props;
+    const fillColor = payload.isWinningWeek ? '#22c55e' : '#ef4444';
+
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={6}
+        fill={fillColor}
+        stroke="#000"
+        strokeWidth={2}
+      />
+    );
+  };
+
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white border-4 border-black p-3 shadow-lg text-black">
+          <p className="font-bold text-sm mb-1 text-black">Week {data.week}</p>
+          <p className="text-sm text-black">Score: <span className="font-bold">{data.score.toFixed(1)}</span></p>
+          <p className="text-sm text-black">Record: <span className="font-bold">{data.wins}-{data.losses}</span></p>
+          <p className="text-sm text-black">Win %: <span className="font-bold">{data.winPct.toFixed(1)}%</span></p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <Card className="retro-card border-4">
@@ -73,161 +88,85 @@ export function PerformanceChart({ weeklyPerformance }: PerformanceChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="w-full overflow-x-auto">
-          <svg
-            width={chartWidth}
-            height={chartHeight}
-            className="border-4 border-black bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
-            style={{ minWidth: `${chartWidth}px` }}
-          >
-            {/* Grid lines */}
-            {yAxisTicks.map((tick, i) => (
-              <line
-                key={`grid-${i}`}
-                x1={chartPadding.left}
-                y1={tick.y}
-                x2={chartWidth - chartPadding.right}
-                y2={tick.y}
-                stroke="#ddd"
-                strokeWidth="1"
-                strokeDasharray="4 4"
+        <div className="w-full bg-white p-2 sm:p-4 rounded-lg border-4 border-black">
+          <div className="w-full overflow-x-auto">
+            <div style={{ minWidth: '500px', width: '100%', height: '350px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={chartData}
+                  margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
+                >
+              {/* Grid */}
+              <CartesianGrid stroke="#ccc" strokeDasharray="4 4" />
+
+              {/* X-Axis */}
+              <XAxis
+                dataKey="week"
+                tickFormatter={(week) => `W${week}`}
+                stroke="#000"
+                tick={{ fill: '#000', fontSize: 12 }}
+                height={40}
               />
-            ))}
 
-            {/* Average line */}
-            <line
-              x1={chartPadding.left}
-              y1={avgY}
-              x2={chartWidth - chartPadding.right}
-              y2={avgY}
-              stroke="#2D5016"
-              strokeWidth="2"
-              strokeDasharray="8 4"
-            />
-            <text
-              x={chartWidth - chartPadding.right + 5}
-              y={avgY + 4}
-              fill="#2D5016"
-              fontSize="12"
-              fontWeight="bold"
-            >
-              AVG
-            </text>
+              {/* Y-Axis */}
+              <YAxis
+                stroke="#000"
+                tick={{ fill: '#000', fontSize: 12 }}
+                width={60}
+                label={{
+                  value: 'POINTS',
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { fontSize: '14px', fontWeight: 'bold', fill: '#000' },
+                }}
+              />
 
-            {/* Score line */}
-            <path
-              d={scorePath}
-              fill="none"
-              stroke="#2D5016"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+              {/* Tooltip */}
+              <Tooltip content={<CustomTooltip />} />
 
-            {/* Data points */}
-            {scorePoints.map((point, index) => {
-              const week = weeklyPerformance[index];
-              const totalGames = week.wins + week.losses;
-              const winPct = totalGames > 0 ? (week.wins / totalGames) * 100 : 0;
+              {/* Average line */}
+              <ReferenceLine
+                y={avgScore}
+                stroke="#2D5016"
+                strokeWidth={2}
+                strokeDasharray="8 4"
+                label={{
+                  value: 'AVG',
+                  position: 'right',
+                  fill: '#2D5016',
+                  fontWeight: 'bold',
+                  fontSize: 12,
+                }}
+              />
 
-              return (
-                <g key={`point-${index}`}>
-                  {/* Point circle */}
-                  <circle
-                    cx={point.x}
-                    cy={point.y}
-                    r="6"
-                    fill={winPct >= 50 ? '#22c55e' : '#ef4444'}
-                    stroke="#000"
-                    strokeWidth="2"
-                  />
-                  {/* Week label below */}
-                  <text
-                    x={point.x}
-                    y={chartHeight - chartPadding.bottom + 20}
-                    textAnchor="middle"
-                    fill="#000"
-                    fontSize="12"
-                    fontWeight="bold"
-                  >
-                    W{week.week}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* Y-axis */}
-            <line
-              x1={chartPadding.left}
-              y1={chartPadding.top}
-              x2={chartPadding.left}
-              y2={chartHeight - chartPadding.bottom}
-              stroke="#000"
-              strokeWidth="3"
-            />
-
-            {/* Y-axis labels */}
-            {yAxisTicks.map((tick, i) => (
-              <text
-                key={`y-label-${i}`}
-                x={chartPadding.left - 10}
-                y={tick.y + 4}
-                textAnchor="end"
-                fill="#000"
-                fontSize="12"
-                fontWeight="bold"
-              >
-                {tick.value.toFixed(0)}
-              </text>
-            ))}
-
-            {/* X-axis */}
-            <line
-              x1={chartPadding.left}
-              y1={chartHeight - chartPadding.bottom}
-              x2={chartWidth - chartPadding.right}
-              y2={chartHeight - chartPadding.bottom}
-              stroke="#000"
-              strokeWidth="3"
-            />
-
-            {/* Axis labels */}
-            <text
-              x={chartPadding.left - 45}
-              y={chartHeight / 2}
-              textAnchor="middle"
-              fill="#000"
-              fontSize="14"
-              fontWeight="bold"
-              transform={`rotate(-90, ${chartPadding.left - 45}, ${chartHeight / 2})`}
-            >
-              POINTS
-            </text>
-            <text
-              x={chartWidth / 2}
-              y={chartHeight - 5}
-              textAnchor="middle"
-              fill="#000"
-              fontSize="14"
-              fontWeight="bold"
-            >
-              WEEK
-            </text>
-          </svg>
+              {/* Score line */}
+              <Line
+                type="monotone"
+                dataKey="score"
+                stroke="#2D5016"
+                strokeWidth={3}
+                dot={<CustomDot />}
+                activeDot={{ r: 8, stroke: '#000', strokeWidth: 2 }}
+                animationDuration={800}
+              />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex flex-wrap gap-4 justify-center text-sm">
+        <div className="mt-4 flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 justify-center text-xs sm:text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-black"></div>
+            <div className="w-4 h-4 shrink-0 rounded-full bg-green-500 border-2 border-black"></div>
             <span className="font-semibold">Winning Week (&gt;50% wins)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-500 border-2 border-black"></div>
+            <div className="w-4 h-4 shrink-0 rounded-full bg-red-500 border-2 border-black"></div>
             <span className="font-semibold">Losing Week (&lt;50% wins)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5 bg-retro-green border-dashed"></div>
+            <div className="w-8 h-0.5 shrink-0 bg-retro-green border-dashed"></div>
             <span className="font-semibold">Season Average</span>
           </div>
         </div>
