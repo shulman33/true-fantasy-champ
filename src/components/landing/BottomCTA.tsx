@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Trophy, Check } from "lucide-react";
 
 export function BottomCTA() {
   return (
@@ -12,7 +13,9 @@ export function BottomCTA() {
           {/* Content */}
           <div className="relative">
             {/* Trophy Icon */}
-            <div className="mb-4 text-5xl md:mb-6 md:text-7xl lg:text-8xl">🏆</div>
+            <div className="mb-4 flex justify-center md:mb-6">
+              <Trophy className="h-16 w-16 text-retro-yellow md:h-20 md:w-20 lg:h-24 lg:w-24" aria-hidden="true" />
+            </div>
 
             {/* Headline */}
             <h2 className="mb-3 text-lg leading-tight text-primary md:mb-6 md:text-3xl lg:text-4xl">
@@ -37,9 +40,10 @@ export function BottomCTA() {
               <Link href="/signup">
                 <Button
                   size="lg"
-                  className="retro-button h-auto w-full bg-primary py-3 text-[10px] text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-12 md:px-12 md:py-6 md:text-base lg:px-16"
+                  className="retro-button flex h-auto w-full items-center justify-center gap-2 bg-primary py-3 text-[10px] text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-12 md:px-12 md:py-6 md:text-base lg:px-16"
                 >
-                  🏈 SIGN UP FREE
+                  <Trophy className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
+                  SIGN UP FREE
                 </Button>
               </Link>
             </div>
@@ -58,15 +62,15 @@ export function BottomCTA() {
             {/* Trust Indicators */}
             <div className="mt-5 flex flex-col gap-2 text-[9px] text-muted-foreground md:mt-8 md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-6 md:text-xs">
               <div className="flex items-center justify-center gap-2">
-                <span className="text-primary">✓</span>
+                <Check className="h-3 w-3 text-primary" aria-hidden="true" />
                 <span>100% Free</span>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-primary">✓</span>
+                <Check className="h-3 w-3 text-primary" aria-hidden="true" />
                 <span>No Credit Card Required</span>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-primary">✓</span>
+                <Check className="h-3 w-3 text-primary" aria-hidden="true" />
                 <span>Setup in 2 Minutes</span>
               </div>
             </div>

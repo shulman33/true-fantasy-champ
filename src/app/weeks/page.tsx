@@ -9,6 +9,10 @@ export default function WeeksPage() {
         subtitle="View Performance by Week"
         lastUpdated="Live Data"
         seasonYear={2025}
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Weekly Analysis" },
+        ]}
       />
 
       <WeeksPageClient />

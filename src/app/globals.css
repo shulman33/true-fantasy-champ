@@ -32,6 +32,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-foreground-accessible: var(--muted-foreground-accessible);
+  --color-focus-ring: var(--focus-ring);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
@@ -60,13 +62,15 @@
   --secondary: oklch(0.35 0.06 135);
   --secondary-foreground: oklch(0.95 0 0);
   --muted: oklch(0.35 0.05 135);
-  --muted-foreground: oklch(0.7 0 0);
+  --muted-foreground: oklch(0.85 0 0); /* WCAG AA compliant - increased from 0.7 to 0.85 for better contrast */
+  --muted-foreground-accessible: oklch(0.9 0 0); /* Even higher contrast for critical text */
   --accent: oklch(0.75 0.2 100); /* Retro yellow accent */
   --accent-foreground: oklch(0.15 0 0);
   --destructive: oklch(0.6 0.25 25); /* Red */
   --border: oklch(0.5 0.1 135);
   --input: oklch(0.35 0.06 135);
   --ring: oklch(0.7 0.25 145);
+  --focus-ring: oklch(0.8 0.15 142); /* High-contrast focus indicator */
   --chart-1: oklch(0.7 0.25 145); /* Bright green */
   --chart-2: oklch(0.75 0.2 100); /* Yellow */
   --chart-3: oklch(0.6 0.25 25); /* Red */
@@ -94,7 +98,8 @@
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted-foreground: oklch(0.85 0 0); /* WCAG AA compliant - increased from 0.708 */
+  --muted-foreground-accessible: oklch(0.9 0 0); /* Even higher contrast */
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
@@ -118,14 +123,36 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  /* High-contrast focus indicators for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-focus-ring;
+  }
+
+  /* Prevent sticky header from obscuring focused elements (WCAG 2.4.11) */
+  html {
+    scroll-padding-top: 72px; /* Desktop header height */
+  }
+
+  @media (max-width: 768px) {
+    html {
+      scroll-padding-top: 64px; /* Mobile header height */
+    }
+  }
+
   body {
     @apply bg-background text-foreground;
     /* Retro Bowl aesthetic with pixel font */
     font-family: var(--font-press-start), monospace;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+  }
+
+  /* Skip to content link for keyboard navigation */
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring;
   }
 }
 

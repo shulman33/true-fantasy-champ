@@ -15,6 +15,10 @@ export default async function TeamPage({
         subtitle="Detailed Performance Analysis"
         lastUpdated="Live Data"
         seasonYear={2025}
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Team Profile" },
+        ]}
       />
 
       <TeamPageClient teamId={teamId} />

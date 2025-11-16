@@ -38,6 +38,11 @@ export default async function WeekPage({
         subtitle="Hypothetical Matchups & Stats"
         lastUpdated="Live Data"
         seasonYear={2025}
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Weekly Analysis", href: "/weeks" },
+          { label: `Week ${weekNumber}` },
+        ]}
       />
 
       <WeekPageClient week={weekNumber} />

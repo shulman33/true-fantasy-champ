@@ -1,5 +1,6 @@
 "use client";
 
+import { Trophy } from "lucide-react";
 import { MainLayout, ScoreboardHeader } from "@/components/shared";
 import {
   StatsGrid,
@@ -54,8 +55,9 @@ export default function DemoPage() {
     <MainLayout>
       {/* Demo Banner */}
       <div className="mb-6 rounded-lg border-2 border-retro-yellow bg-retro-yellow/10 p-4 text-center">
-        <p className="text-xs text-retro-yellow md:text-sm">
-          🎮 <span className="font-bold">DEMO MODE</span> - This is sample data
+        <p className="flex items-center justify-center gap-2 text-xs text-retro-yellow md:text-sm">
+          <Trophy className="h-4 w-4" aria-hidden="true" />
+          <span className="font-bold">DEMO MODE</span> - This is sample data
           to show you how True Champion works.{" "}
           <Link href="/signup" className="underline hover:text-retro-yellow/80">
             Sign up
@@ -115,9 +117,10 @@ export default function DemoPage() {
             </p>
             <Link
               href="/signup"
-              className="retro-button inline-block bg-primary px-8 py-3 text-xs text-primary-foreground transition-all hover:bg-primary/90"
+              className="retro-button inline-flex items-center gap-2 bg-primary px-8 py-3 text-xs text-primary-foreground transition-all hover:bg-primary/90"
             >
-              🏈 CONNECT YOUR LEAGUE
+              <Trophy className="h-4 w-4" aria-hidden="true" />
+              CONNECT YOUR LEAGUE
             </Link>
           </div>
         </div>

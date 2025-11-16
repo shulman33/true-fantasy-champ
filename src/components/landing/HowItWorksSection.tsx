@@ -1,3 +1,5 @@
+import { Zap } from "lucide-react";
+
 interface Step {
   number: string;
   title: string;
@@ -83,8 +85,8 @@ export function HowItWorksSection() {
         {/* Bottom Message */}
         <div className="mt-8 text-center md:mt-12">
           <div className="retro-card inline-block border-primary bg-card/50 px-6 py-3 md:px-8 md:py-4">
-            <p className="text-xs text-muted-foreground md:text-sm">
-              <span className="text-primary">⚡</span> Updates automatically every
+            <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground md:text-sm">
+              <Zap className="h-4 w-4 text-primary" aria-hidden="true" /> Updates automatically every
               Tuesday
             </p>
           </div>

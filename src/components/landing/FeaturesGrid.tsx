@@ -1,32 +1,34 @@
 import Link from "next/link";
+import { BarChart3, Clover, Calendar, Trophy } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface Feature {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   description: string;
 }
 
 const FEATURES: Feature[] = [
   {
-    icon: "📊",
+    icon: BarChart3,
     title: "TRUE RECORDS",
     description:
       "See what your record would be if you played everyone, every single week. The truth revealed.",
   },
   {
-    icon: "🍀",
+    icon: Clover,
     title: "LUCK METER",
     description:
       "Find out who's been riding their lucky schedule and who's been robbed by fate.",
   },
   {
-    icon: "📅",
+    icon: Calendar,
     title: "WEEKLY BREAKDOWN",
     description:
       "Dive into every week to see hypothetical matchups and how you would've fared.",
   },
   {
-    icon: "🏆",
+    icon: Trophy,
     title: "TRUE CHAMPION",
     description:
       "Crown the team that deserves it most. Consistent, dominant performance.",
@@ -60,7 +62,12 @@ export function FeaturesGrid() {
               {/* Content */}
               <div className="relative">
                 {/* Icon */}
-                <div className="mb-4 text-3xl md:text-4xl">{feature.icon}</div>
+                <div className="mb-4">
+                  {(() => {
+                    const Icon = feature.icon;
+                    return <Icon className="h-8 w-8 text-primary md:h-10 md:w-10" aria-hidden="true" />;
+                  })()}
+                </div>
 
                 {/* Title */}
                 <h3 className="mb-3 text-sm text-primary md:text-base lg:text-lg">
@@ -87,9 +94,10 @@ export function FeaturesGrid() {
           </p>
           <Link
             href="/demo"
-            className="retro-button inline-block border-2 border-retro-yellow bg-retro-yellow/20 px-6 py-3 text-xs text-retro-yellow transition-all hover:bg-retro-yellow/30 md:px-8 md:text-sm"
+            className="retro-button inline-flex items-center gap-2 border-2 border-retro-yellow bg-retro-yellow/20 px-6 py-3 text-xs text-retro-yellow transition-all hover:bg-retro-yellow/30 md:px-8 md:text-sm"
           >
-            🎮 TRY DEMO LEAGUE
+            <Trophy className="h-4 w-4" aria-hidden="true" />
+            TRY DEMO LEAGUE
           </Link>
         </div>
       </div>

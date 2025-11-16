@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { BarChart3 } from 'lucide-react';
 import { RecordComparisonCard } from './record-comparison-card';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -159,8 +160,9 @@ export function RecordComparisonGrid({
           </>
         ) : (
           <div className="p-8 text-center">
-            <p className="text-sm text-gray-500 font-mono">
-              📊 Actual league standings will be displayed here once integrated with ESPN API
+            <p className="flex items-center justify-center gap-2 text-sm text-gray-500 font-mono">
+              <BarChart3 className="h-5 w-5" aria-hidden="true" />
+              Actual league standings will be displayed here once integrated with ESPN API
             </p>
           </div>
         )}

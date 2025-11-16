@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Trophy, Check } from "lucide-react";
 
 export function HeroSection() {
   const scrollToFeatures = () => {
@@ -64,9 +65,10 @@ export function HeroSection() {
             <Link href="/signup" className="flex-1 sm:flex-none">
               <Button
                 size="lg"
-                className="retro-button h-auto w-full bg-primary py-3 text-[10px] text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-8 md:text-sm"
+                className="retro-button flex h-auto w-full items-center justify-center gap-2 bg-primary py-3 text-[10px] text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-8 md:text-sm"
               >
-                🏈 CONNECT YOUR LEAGUE
+                <Trophy className="h-4 w-4" aria-hidden="true" />
+                CONNECT YOUR LEAGUE
               </Button>
             </Link>
             <Button
@@ -82,15 +84,15 @@ export function HeroSection() {
           {/* Trust Indicators */}
           <div className="mt-4 flex flex-col gap-2 text-[9px] text-muted-foreground md:mt-8 md:flex-row md:flex-wrap md:items-center md:gap-4 md:text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-primary">✓</span>
+              <Check className="h-3 w-3 text-primary" aria-hidden="true" />
               <span>Free Forever</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-primary">✓</span>
+              <Check className="h-3 w-3 text-primary" aria-hidden="true" />
               <span>No Credit Card</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-primary">✓</span>
+              <Check className="h-3 w-3 text-primary" aria-hidden="true" />
               <span>ESPN/Sleeper/Yahoo</span>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Trophy, Check } from "lucide-react";
 
 export function DemoPreview() {
   return (
@@ -12,7 +13,9 @@ export function DemoPreview() {
           {/* Content */}
           <div className="relative text-center">
             {/* Icon */}
-            <div className="mb-4 text-4xl md:mb-6 md:text-6xl">🎮</div>
+            <div className="mb-4 flex justify-center md:mb-6">
+              <Trophy className="h-12 w-12 text-retro-yellow md:h-16 md:w-16" aria-hidden="true" />
+            </div>
 
             {/* Headline */}
             <h2 className="mb-2 text-lg text-primary md:mb-4 md:text-2xl lg:text-3xl">
@@ -31,15 +34,15 @@ export function DemoPreview() {
             {/* Demo Features */}
             <div className="mb-4 space-y-1.5 text-[10px] text-muted-foreground md:mb-8 md:space-y-2 md:text-sm">
               <div className="flex items-center justify-center gap-2">
-                <span className="text-primary">✓</span>
+                <Check className="h-3 w-3 text-primary" aria-hidden="true" />
                 <span>Interactive standings table</span>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-primary">✓</span>
+                <Check className="h-3 w-3 text-primary" aria-hidden="true" />
                 <span>Week-by-week analysis</span>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-primary">✓</span>
+                <Check className="h-3 w-3 text-primary" aria-hidden="true" />
                 <span>Luck vs skill insights</span>
               </div>
             </div>
@@ -48,9 +51,10 @@ export function DemoPreview() {
             <Link href="/demo">
               <Button
                 size="lg"
-                className="retro-button h-auto w-full bg-primary py-3 text-[10px] text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-12 md:text-sm"
+                className="retro-button flex h-auto w-full items-center justify-center gap-2 bg-primary py-3 text-[10px] text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-12 md:text-sm"
               >
-                🏈 EXPLORE DEMO LEAGUE
+                <Trophy className="h-4 w-4" aria-hidden="true" />
+                EXPLORE DEMO LEAGUE
               </Button>
             </Link>
 

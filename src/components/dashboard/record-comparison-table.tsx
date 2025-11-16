@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   Table,
@@ -11,8 +12,10 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TableFilters } from './table-filters';
+import { TeamSearch } from './team-search';
 import { cn } from '@/lib/utils';
-import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from 'lucide-react';
+import { ArrowUpIcon, ArrowDownIcon, MinusIcon, Check, X, BarChart3 } from 'lucide-react';
 import { RetroTooltip, RetroTooltipTrigger, RetroTooltipContent } from '@/components/ui/retro-tooltip';
 
 interface TeamStanding {
@@ -41,18 +44,81 @@ interface RecordComparisonTableProps {
   className?: string;
 }
 
+type FilterOption = 'all' | 'lucky' | 'unlucky' | 'neutral';
+
 export function RecordComparisonTable({
   trueStandings,
   actualStandings,
   className,
 }: RecordComparisonTableProps) {
+  const [filter, setFilter] = useState<FilterOption>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
   // For now, show placeholder for actual records
   const hasActualData = actualStandings && actualStandings.length > 0;
 
+  // Calculate win differentials for all teams
+  const teamsWithDiff = trueStandings.map((team) => {
+    const actualTeam = hasActualData
+      ? actualStandings.find((t) => t.teamId === team.teamId)
+      : null;
+
+    const actualGamesPlayed = actualTeam ? actualTeam.wins + actualTeam.losses : 0;
+    const expectedWins = actualTeam ? Math.round(team.winPercentage * actualGamesPlayed) : 0;
+    const winDiff = actualTeam ? actualTeam.wins - expectedWins : 0;
+    const pctDiff = actualTeam
+      ? (actualTeam.winPercentage - team.winPercentage) * 100
+      : 0;
+
+    return {
+      team,
+      actualTeam,
+      winDiff,
+      pctDiff,
+    };
+  });
+
+  // Apply filters
+  const filteredTeams = teamsWithDiff.filter(({ team, winDiff }) => {
+    // Filter by luck status
+    if (filter === 'lucky' && winDiff < 2) return false;
+    if (filter === 'unlucky' && winDiff > -2) return false;
+    if (filter === 'neutral' && Math.abs(winDiff) >= 2) return false;
+
+    // Filter by search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        team.teamName.toLowerCase().includes(searchLower) ||
+        team.abbrev.toLowerCase().includes(searchLower) ||
+        team.owner.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return true;
+  });
+
+  const filterOptions = [
+    { label: 'ALL TEAMS', value: 'all' },
+    { label: 'LUCKY (+2)', value: 'lucky' },
+    { label: 'UNLUCKY (-2)', value: 'unlucky' },
+    { label: 'NEUTRAL (±1)', value: 'neutral' },
+  ];
+
   const getDifferentialIcon = (diff: number) => {
-    if (diff > 0) return <ArrowUpIcon className="w-4 h-4 text-green-500" />;
-    if (diff < 0) return <ArrowDownIcon className="w-4 h-4 text-red-500" />;
-    return <MinusIcon className="w-4 h-4 text-gray-500" />;
+    if (diff > 0) return (
+      <>
+        <Check className="w-3 h-3 text-green-500" aria-hidden="true" />
+        <ArrowUpIcon className="w-4 h-4 text-green-500" aria-hidden="true" />
+      </>
+    );
+    if (diff < 0) return (
+      <>
+        <X className="w-3 h-3 text-red-500" aria-hidden="true" />
+        <ArrowDownIcon className="w-4 h-4 text-red-500" aria-hidden="true" />
+      </>
+    );
+    return <MinusIcon className="w-4 h-4 text-gray-500" aria-hidden="true" />;
   };
 
   const getDifferentialColor = (diff: number) => {
@@ -61,19 +127,50 @@ export function RecordComparisonTable({
     return 'text-gray-500';
   };
 
+  const getDifferentialLabel = (diff: number) => {
+    if (diff > 0) return `${diff} more wins than expected (lucky)`;
+    if (diff < 0) return `${Math.abs(diff)} fewer wins than expected (unlucky)`;
+    return 'Performance matches expectations';
+  };
+
   return (
     <Card className={cn('border-4 border-retro-green bg-black/80 backdrop-blur-sm', className)}>
-      <CardHeader className="border-b-4 border-retro-green/30">
-        <CardTitle className="font-press-start text-xl text-retro-green uppercase tracking-wider">
-          Record Comparison
-        </CardTitle>
-        <p className="text-xs text-gray-400 font-mono mt-2">
-          {hasActualData
-            ? 'True records vs actual league standings - reveal schedule luck!'
-            : 'Actual standings data coming soon...'}
-        </p>
+      <CardHeader className="border-b-4 border-retro-green/30 space-y-4 py-6">
+        <div>
+          <CardTitle className="font-press-start text-xl text-retro-green uppercase tracking-wider">
+            Record Comparison
+          </CardTitle>
+          <p className="text-xs text-muted-foreground-accessible font-mono mt-2">
+            {hasActualData
+              ? 'True records vs actual league standings - reveal schedule luck!'
+              : 'Actual standings data coming soon...'}
+          </p>
+        </div>
+        {hasActualData && (
+          <>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <TeamSearch
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Search teams, owners..."
+                />
+              </div>
+              <TableFilters
+                options={filterOptions}
+                activeFilter={filter}
+                onFilterChange={(value) => setFilter(value as FilterOption)}
+              />
+            </div>
+            {filteredTeams.length !== teamsWithDiff.length && (
+              <p className="text-xs text-retro-yellow font-mono">
+                Showing {filteredTeams.length} of {teamsWithDiff.length} teams
+              </p>
+            )}
+          </>
+        )}
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="pb-4">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -117,21 +214,7 @@ export function RecordComparisonTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trueStandings.map((team, index) => {
-                const actualTeam = hasActualData
-                  ? actualStandings.find((t) => t.teamId === team.teamId)
-                  : null;
-
-                // Calculate expected record based on true win percentage
-                // This normalizes the comparison: what SHOULD the record be given true performance?
-                const actualGamesPlayed = actualTeam ? actualTeam.wins + actualTeam.losses : 0;
-                const expectedWins = actualTeam ? Math.round(team.winPercentage * actualGamesPlayed) : 0;
-                const winDiff = actualTeam ? actualTeam.wins - expectedWins : 0;
-
-                const pctDiff = actualTeam
-                  ? (actualTeam.winPercentage - team.winPercentage) * 100
-                  : 0;
-
+              {filteredTeams.map(({ team, actualTeam, winDiff, pctDiff }, index) => {
                 // Only show luck badge if differential is significant (±2 games or more)
                 const showLuckBadge = Math.abs(winDiff) >= 2;
                 const luckStatus = winDiff > 0 ? 'Lucky' : 'Unlucky';
@@ -157,6 +240,7 @@ export function RecordComparisonTable({
                       <Link
                         href={`/team/${team.teamId}`}
                         className="flex flex-col gap-1 hover:opacity-80 transition-opacity cursor-pointer group"
+                        aria-label={`View details for ${team.teamName}`}
                       >
                         <span className="font-bold text-white group-hover:text-retro-yellow transition-colors">
                           {team.teamName}
@@ -170,12 +254,12 @@ export function RecordComparisonTable({
                           <span className="font-mono font-bold text-white">
                             {actualTeam.wins}-{actualTeam.losses}
                           </span>
-                          <span className="text-xs text-gray-400 font-mono">
+                          <span className="text-xs text-muted-foreground-accessible font-mono">
                             {(actualTeam.winPercentage * 100).toFixed(1)}%
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-600 text-xs font-mono">---</span>
+                        <span className="text-muted-foreground text-xs font-mono">---</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
@@ -190,7 +274,7 @@ export function RecordComparisonTable({
                     </TableCell>
                     <TableCell className="text-center">
                       {hasActualData ? (
-                        <div className="flex flex-col items-center gap-1">
+                        <div className="flex flex-col items-center gap-1" aria-label={getDifferentialLabel(winDiff)}>
                           <div className="flex items-center gap-1">
                             {getDifferentialIcon(winDiff)}
                             <span className={cn('font-mono font-bold', getDifferentialColor(winDiff))}>
@@ -204,7 +288,7 @@ export function RecordComparisonTable({
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-600 text-xs font-mono">---</span>
+                        <span className="text-muted-foreground text-xs font-mono">---</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
@@ -212,17 +296,20 @@ export function RecordComparisonTable({
                         <Badge
                           variant={luckStatus === 'Lucky' ? 'default' : 'destructive'}
                           className={cn(
-                            'font-press-start text-[10px] px-2 py-1',
+                            'font-press-start text-[10px] px-2 py-1 flex items-center gap-1',
                             luckStatus === 'Lucky' && 'bg-green-500/20 text-green-500 border-green-500',
                             luckStatus === 'Unlucky' && 'bg-red-500/20 text-red-500 border-red-500'
                           )}
+                          aria-label={`${luckStatus} schedule - ${Math.abs(winDiff)} games ${winDiff > 0 ? 'above' : 'below'} expected record`}
                         >
+                          {luckStatus === 'Lucky' && <Check className="h-3 w-3" aria-hidden="true" />}
+                          {luckStatus === 'Unlucky' && <X className="h-3 w-3" aria-hidden="true" />}
                           {luckStatus}
                         </Badge>
                       ) : hasActualData ? (
-                        <span className="text-gray-400 text-xs font-mono">-</span>
+                        <span className="text-muted-foreground-accessible text-xs font-mono">-</span>
                       ) : (
-                        <span className="text-gray-600 text-xs font-mono">---</span>
+                        <span className="text-muted-foreground text-xs font-mono">---</span>
                       )}
                     </TableCell>
                   </TableRow>
@@ -233,9 +320,10 @@ export function RecordComparisonTable({
         </div>
 
         {!hasActualData && (
-          <div className="p-8 text-center border-t-2 border-retro-green/30">
-            <p className="text-sm text-gray-500 font-mono">
-              📊 Actual league standings will be displayed here once integrated with ESPN API
+          <div className="p-12 text-center border-t-2 border-retro-green/30">
+            <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground font-mono">
+              <BarChart3 className="h-5 w-5" aria-hidden="true" />
+              Actual league standings will be displayed here once integrated with ESPN API
             </p>
           </div>
         )}

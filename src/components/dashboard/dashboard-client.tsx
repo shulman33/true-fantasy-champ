@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import {
   TrueStandingsTable,
   RecordComparisonTable,
-  StatsGrid,
   TeamStandingsGrid,
   RecordComparisonGrid
 } from '@/components/dashboard';
+import { CollapsibleStatsGrid } from './collapsible-stats-grid';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { LoadingTable, LoadingStats, ErrorMessage } from '@/components/shared';
 import { RefreshCwIcon } from 'lucide-react';
@@ -98,19 +99,19 @@ export function DashboardClient() {
 
       if (result.success) {
         setRefreshStatus(
-          `✓ Updated ${result.weeksProcessed} weeks in ${(result.duration / 1000).toFixed(1)}s`
+          `Updated ${result.weeksProcessed} weeks in ${(result.duration / 1000).toFixed(1)}s`
         );
         // Refetch dashboard data after successful ESPN update
         await fetchData();
       } else {
-        setRefreshStatus(`⚠ Partial update: ${result.errors.length} error(s)`);
+        setRefreshStatus(`Partial update: ${result.errors.length} error(s)`);
         setError(result.errors.join(', '));
       }
 
       // Clear status after 5 seconds
       setTimeout(() => setRefreshStatus(null), 5000);
     } catch (err) {
-      setRefreshStatus('❌ Failed to update ESPN data');
+      setRefreshStatus('Failed to update ESPN data');
       setError(err instanceof Error ? err.message : 'An error occurred');
       setTimeout(() => setRefreshStatus(null), 5000);
     } finally {
@@ -124,7 +125,7 @@ export function DashboardClient() {
 
   if (loading) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-12">
         <LoadingStats />
         <LoadingTable rows={12} />
       </div>
@@ -157,7 +158,7 @@ export function DashboardClient() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Refresh Buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
         <div className="text-xs sm:text-sm text-gray-400 font-mono wrap-break-word">
@@ -200,31 +201,37 @@ export function DashboardClient() {
         </div>
       )}
 
-      {/* Stats Grid */}
-      <StatsGrid
+      {/* Collapsible Stats Grid */}
+      <CollapsibleStatsGrid
         luckiest={data.stats.luckiest}
         unluckiest={data.stats.unluckiest}
         mostConsistent={data.stats.mostConsistent}
         highestScoring={data.stats.highestScoring}
       />
 
-      {/* True Standings - Mobile Card Grid (< 1024px) / Desktop Table (>= 1024px) */}
-      <div className="block lg:hidden">
-        <TeamStandingsGrid standings={data.standings} />
-      </div>
+      {/* Tabbed Tables - Desktop (>= 1024px) */}
       <div className="hidden lg:block">
-        <TrueStandingsTable standings={data.standings} />
+        <Tabs defaultValue="standings" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="standings">True Standings</TabsTrigger>
+            <TabsTrigger value="comparison">Luck Comparison</TabsTrigger>
+          </TabsList>
+          <TabsContent value="standings">
+            <TrueStandingsTable standings={data.standings} />
+          </TabsContent>
+          <TabsContent value="comparison">
+            <RecordComparisonTable
+              trueStandings={data.standings}
+              actualStandings={data.actualStandings || undefined}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* Record Comparison - Mobile Card Grid (< 1024px) / Desktop Table (>= 1024px) */}
-      <div className="block lg:hidden">
+      {/* Mobile Card Grids (< 1024px) */}
+      <div className="block lg:hidden space-y-12">
+        <TeamStandingsGrid standings={data.standings} />
         <RecordComparisonGrid
-          trueStandings={data.standings}
-          actualStandings={data.actualStandings || undefined}
-        />
-      </div>
-      <div className="hidden lg:block">
-        <RecordComparisonTable
           trueStandings={data.standings}
           actualStandings={data.actualStandings || undefined}
         />

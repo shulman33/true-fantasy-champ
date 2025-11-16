@@ -65,7 +65,7 @@ export function StatsCard({
         <div className="h-full w-full bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,currentColor_2px,currentColor_4px)]" />
       </div>
 
-      <CardHeader className="pb-3 relative">
+      <CardHeader className="pb-5 relative">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
             <CardTitle className="text-[10px] sm:text-sm font-press-start uppercase tracking-wider text-gray-300 truncate">
@@ -115,8 +115,8 @@ export function StatsCard({
         </div>
       </CardHeader>
 
-      <CardContent className="relative">
-        <div className="space-y-2">
+      <CardContent className="relative py-5">
+        <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1.5 sm:gap-2">
             <span
               className={cn(
