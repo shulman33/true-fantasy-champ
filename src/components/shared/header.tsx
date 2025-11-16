@@ -37,7 +37,17 @@ export function Header() {
             >
               STANDINGS
             </Link>
-            <TeamsNav />
+            {user ? (
+              <TeamsNav />
+            ) : (
+              <Link
+                href="/demo"
+                className="text-sm hover:text-primary transition-colors py-3"
+                aria-current={pathname === '/demo' ? 'page' : undefined}
+              >
+                DEMO
+              </Link>
+            )}
             <Link
               href="/weeks"
               className="text-sm hover:text-primary transition-colors py-3"

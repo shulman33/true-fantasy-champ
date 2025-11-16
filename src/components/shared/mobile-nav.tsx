@@ -20,11 +20,20 @@ export function MobileNav() {
   const { user, loading, signOut } = useAuth();
   const pathname = usePathname();
 
-  const navItems = [
+  const baseNavItems = [
     { href: "/dashboard", label: "STANDINGS" },
     { href: "/weeks", label: "WEEKS" },
     { href: "/about", label: "ABOUT" },
   ];
+
+  // Add demo link for unauthenticated users
+  const navItems = user
+    ? baseNavItems
+    : [
+        baseNavItems[0], // STANDINGS
+        { href: "/demo", label: "DEMO" },
+        ...baseNavItems.slice(1), // WEEKS, ABOUT
+      ];
 
   const handleSignOut = async () => {
     setOpen(false);
@@ -77,7 +86,7 @@ export function MobileNav() {
               {item.label}
             </Link>
           ))}
-          <TeamsNavMobile onNavigate={() => setOpen(false)} />
+          {user && <TeamsNavMobile onNavigate={() => setOpen(false)} />}
           {!loading && (
             user ? (
               <Button

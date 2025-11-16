@@ -1,7 +1,7 @@
 /**
- * Next.js Middleware for Supabase Authentication
+ * Next.js 16 Proxy for Supabase Authentication
  *
- * This middleware:
+ * This proxy:
  * 1. Refreshes the user's session automatically (prevents premature logout)
  * 2. Redirects unauthenticated users to login for protected routes
  * 3. Manages cookie synchronization between client and server
@@ -18,6 +18,8 @@ import { NextResponse, type NextRequest } from 'next/server'
  */
 const PUBLIC_ROUTES = [
   '/',
+  '/demo',
+  '/about',
   '/login',
   '/signup',
   '/forgot-password',
@@ -31,10 +33,19 @@ const PUBLIC_ROUTES = [
  * Check if the given path is a public route
  */
 function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(route => pathname.startsWith(route))
+
+  // Check for exact match or if pathname starts with route followed by '/'
+  // This prevents '/' from matching everything
+  const isPublic = PUBLIC_ROUTES.some(route => {
+    if (route === '/') {
+      return pathname === '/'
+    }
+    return pathname === route || pathname.startsWith(route + '/')
+  })
+  return isPublic
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -48,7 +59,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          // Update cookies in the request for the next middleware/handler
+          // Update cookies in the request for the next proxy/handler
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
 
           // Create a new response with updated cookies
