@@ -65,10 +65,10 @@ export function CollapsibleStatsGrid({
 
   return (
     <Collapsible open={isOpen} onOpenChange={handleToggle}>
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold">Key Insights</h2>
+      <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 mb-8">
+        <h2 className="text-2xl font-bold text-center sm:text-left">Key Insights</h2>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 w-full sm:w-auto">
             {isOpen ? (
               <>
                 Hide Insights
