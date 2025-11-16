@@ -17,19 +17,19 @@ export function HeroSection() {
       <div className="mx-auto max-w-5xl">
         {/* Hero Content */}
         <div className="retro-card scanlines relative overflow-hidden border-primary bg-card/95 p-4 md:p-8 lg:p-12">
-          {/* Season Badge */}
-          <div className="absolute right-3 top-3 md:right-6 md:top-6">
-            <div className="retro-card border-2 border-retro-yellow bg-retro-yellow/20 px-2 py-1 md:px-4 md:py-2">
-              <span className="text-[9px] font-bold text-retro-yellow md:text-xs">
+          {/* Season Badge - Stacked on mobile, absolute on desktop */}
+          <div className="mb-4 flex justify-center md:absolute md:right-6 md:top-6 md:mb-0">
+            <div className="retro-card border-2 border-retro-yellow bg-retro-yellow/20 px-3 py-1.5 md:px-4 md:py-2">
+              <span className="text-[10px] font-bold text-retro-yellow md:text-xs">
                 SEASON 2025
               </span>
             </div>
           </div>
 
           {/* Main Headline */}
-          <div className="mb-4 pr-20 md:mb-8 md:pr-0">
-            <h1 className="mb-2 text-lg leading-tight text-primary md:mb-4 md:text-3xl lg:text-4xl">
-              FIND
+          <div className="mb-4 text-center md:mb-8 md:text-left">
+            <h1 className="mb-2 text-xl leading-tight text-primary md:mb-4 md:text-3xl lg:text-4xl">
+              FIND YOUR
               <br />
               LEAGUE&apos;S
               <br className="md:hidden" />
@@ -38,13 +38,13 @@ export function HeroSection() {
               <br />
               <span className="text-retro-yellow">CHAMPION</span>
             </h1>
-            <p className="text-[11px] leading-relaxed text-muted-foreground md:text-base lg:text-lg">
+            <p className="text-xs leading-relaxed text-muted-foreground md:text-base lg:text-lg">
               Who would win if everyone played everyone each week?
             </p>
           </div>
 
           {/* Description */}
-          <div className="mb-6 max-w-3xl space-y-2 text-[10px] leading-relaxed text-foreground/90 md:mb-10 md:space-y-3 md:text-sm lg:text-base">
+          <div className="mb-6 max-w-3xl space-y-2 text-center text-[10px] leading-relaxed text-foreground/90 md:mb-10 md:space-y-3 md:text-left md:text-sm lg:text-base">
             <p>
               Your fantasy football league has a dirty little secret: the
               champion might just be the luckiest person in your league, not the
@@ -61,7 +61,7 @@ export function HeroSection() {
           </div>
 
           {/* CTAs */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-center sm:gap-4 md:justify-start">
             <Link href="/signup" className="flex-1 sm:flex-none">
               <Button
                 size="lg"
@@ -82,7 +82,7 @@ export function HeroSection() {
           </div>
 
           {/* Trust Indicators */}
-          <div className="mt-4 flex flex-col gap-2 text-[9px] text-muted-foreground md:mt-8 md:flex-row md:flex-wrap md:items-center md:gap-4 md:text-xs">
+          <div className="mt-4 flex flex-col items-center gap-2 text-[9px] text-muted-foreground md:mt-8 md:flex-row md:items-center md:gap-4 md:text-xs">
             <div className="flex items-center gap-2">
               <Check className="h-3 w-3 text-primary" aria-hidden="true" />
               <span>Free Forever</span>

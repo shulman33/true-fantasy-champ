@@ -39,7 +39,7 @@ export function StatsGrid({
   className,
 }: StatsGridProps) {
   return (
-    <div className={cn('grid grid-cols-1 md:grid-cols-2 gap-8', className)}>
+    <div className={cn('grid grid-cols-1 xs:grid-cols-2 gap-4 sm:gap-6 md:gap-8', className)}>
       {/* Luckiest Team */}
       <StatsCard
         title="Luckiest Team"

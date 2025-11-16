@@ -60,9 +60,9 @@ export function FeaturesGrid() {
               <div className="scanlines pointer-events-none absolute inset-0 opacity-30" />
 
               {/* Content */}
-              <div className="relative">
+              <div className="relative text-center md:text-left">
                 {/* Icon */}
-                <div className="mb-4">
+                <div className="mb-4 flex justify-center md:justify-start">
                   {(() => {
                     const Icon = feature.icon;
                     return <Icon className="h-8 w-8 text-primary md:h-10 md:w-10" aria-hidden="true" />;

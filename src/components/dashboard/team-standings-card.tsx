@@ -50,12 +50,12 @@ export function TeamStandingsCard({ team, className }: TeamStandingsCardProps) {
     <Link href={`/team/${team.teamId}`}>
       <Card
         className={cn(
-          'border-4 bg-black/80 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] cursor-pointer group',
+          'border-2 sm:border-4 bg-black/80 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group touch-manipulation',
           getRankColor(team.rank),
           className
         )}
       >
-        <CardHeader className="pb-2 p-3 sm:p-4">
+        <CardHeader className="pb-2 p-2.5 sm:p-3 md:p-4">
           {/* Rank and Team Info */}
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-1.5">
@@ -90,9 +90,9 @@ export function TeamStandingsCard({ team, className }: TeamStandingsCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3 p-3 pt-2 sm:p-4 sm:pt-2">
+        <CardContent className="space-y-2.5 sm:space-y-3 p-2.5 pt-2 sm:p-3 md:p-4 sm:pt-2">
           {/* Primary Stat - True Record */}
-          <div className="bg-retro-green/10 border-2 border-retro-green/30 rounded-lg p-2.5">
+          <div className="bg-retro-green/10 border border-retro-green/30 sm:border-2 rounded-lg p-2 sm:p-2.5">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] text-gray-400 font-mono uppercase">True Record</span>
               <TrendingUpIcon className="w-3 h-3 text-retro-green" />

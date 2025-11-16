@@ -52,20 +52,20 @@ export function StatsCard({
   return (
     <Card
       className={cn(
-        'relative overflow-hidden border-4',
+        'relative overflow-hidden border-2 sm:border-4',
         styles.border,
-        styles.glow,
+        'sm:' + styles.glow,
         'bg-black/80 backdrop-blur-sm',
-        'transition-all duration-200 hover:scale-[1.02]',
+        'transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]',
         className
       )}
     >
-      {/* Retro scanline effect */}
-      <div className="absolute inset-0 pointer-events-none opacity-10">
+      {/* Retro scanline effect - hidden on mobile for performance */}
+      <div className="hidden sm:block absolute inset-0 pointer-events-none opacity-10">
         <div className="h-full w-full bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,currentColor_2px,currentColor_4px)]" />
       </div>
 
-      <CardHeader className="pb-5 relative">
+      <CardHeader className="pb-3 sm:pb-5 p-3 sm:p-6 relative">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
             <CardTitle className="text-[10px] sm:text-sm font-press-start uppercase tracking-wider text-gray-300 truncate">
@@ -115,8 +115,8 @@ export function StatsCard({
         </div>
       </CardHeader>
 
-      <CardContent className="relative py-5">
-        <div className="space-y-3">
+      <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0 sm:pb-5">
+        <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1.5 sm:gap-2">
             <span
               className={cn(

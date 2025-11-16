@@ -158,7 +158,7 @@ export function DashboardClient() {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 md:space-y-12">
       {/* Refresh Buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
         <div className="text-xs sm:text-sm text-gray-400 font-mono wrap-break-word">
@@ -209,33 +209,39 @@ export function DashboardClient() {
         highestScoring={data.stats.highestScoring}
       />
 
-      {/* Tabbed Tables - Desktop (>= 1024px) */}
-      <div className="hidden lg:block">
-        <Tabs defaultValue="standings" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="standings">True Standings</TabsTrigger>
-            <TabsTrigger value="comparison">Luck Comparison</TabsTrigger>
-          </TabsList>
-          <TabsContent value="standings">
-            <TrueStandingsTable standings={data.standings} />
-          </TabsContent>
-          <TabsContent value="comparison">
-            <RecordComparisonTable
-              trueStandings={data.standings}
-              actualStandings={data.actualStandings || undefined}
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
+      {/* Tabbed Content - All Screen Sizes */}
+      <Tabs defaultValue="standings" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6 h-auto">
+          <TabsTrigger value="standings" className="text-[10px] sm:text-xs md:text-sm py-2 sm:py-2.5">
+            True Standings
+          </TabsTrigger>
+          <TabsTrigger value="comparison" className="text-[10px] sm:text-xs md:text-sm py-2 sm:py-2.5">
+            Luck Analysis
+          </TabsTrigger>
+        </TabsList>
+        
+        {/* Desktop: Tables (>= 1024px) */}
+        <TabsContent value="standings" className="hidden lg:block">
+          <TrueStandingsTable standings={data.standings} />
+        </TabsContent>
+        <TabsContent value="comparison" className="hidden lg:block">
+          <RecordComparisonTable
+            trueStandings={data.standings}
+            actualStandings={data.actualStandings || undefined}
+          />
+        </TabsContent>
 
-      {/* Mobile Card Grids (< 1024px) */}
-      <div className="block lg:hidden space-y-12">
-        <TeamStandingsGrid standings={data.standings} />
-        <RecordComparisonGrid
-          trueStandings={data.standings}
-          actualStandings={data.actualStandings || undefined}
-        />
-      </div>
+        {/* Mobile/Tablet: Card Grids (< 1024px) */}
+        <TabsContent value="standings" className="block lg:hidden">
+          <TeamStandingsGrid standings={data.standings} />
+        </TabsContent>
+        <TabsContent value="comparison" className="block lg:hidden">
+          <RecordComparisonGrid
+            trueStandings={data.standings}
+            actualStandings={data.actualStandings || undefined}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

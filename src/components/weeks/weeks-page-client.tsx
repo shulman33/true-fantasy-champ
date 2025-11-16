@@ -67,9 +67,9 @@ export function WeeksPageClient() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="retro-card bg-background/95">
-        <CardHeader>
-          <CardTitle className="text-xl md:text-2xl uppercase tracking-wider flex items-center gap-2">
-            <Calendar className="h-6 w-6 text-primary" />
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl md:text-2xl uppercase tracking-wider flex flex-col items-center justify-center gap-2">
+            <Calendar className="h-6 w-6 md:h-8 md:w-8 text-primary" />
             Select a Week
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-2">
@@ -152,24 +152,24 @@ export function WeeksPageClient() {
             <div className="text-sm text-muted-foreground uppercase tracking-wider mb-4 text-center">
               Quick Access
             </div>
-            <div className="flex flex-wrap gap-3 justify-center">
+            <div className="flex flex-wrap gap-2 md:gap-3 justify-center px-2">
               {maxWeek > 0 && (
                 <Link href={`/week/${maxWeek}`}>
-                  <Button className="retro-button bg-primary text-primary-foreground">
-                    <TrendingUp className="mr-2 h-4 w-4" />
-                    Latest Week ({maxWeek})
+                  <Button className="retro-button bg-primary text-primary-foreground text-xs sm:text-sm whitespace-nowrap">
+                    <TrendingUp className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Latest </span>Week {maxWeek}
                   </Button>
                 </Link>
               )}
               <Link href={`/week/1`}>
-                <Button variant="outline" className="retro-button">
+                <Button variant="outline" className="retro-button text-xs sm:text-sm">
                   Week 1
                 </Button>
               </Link>
               {maxWeek > 1 && (
                 <Link href={`/week/${maxWeek - 1}`}>
-                  <Button variant="outline" className="retro-button">
-                    Previous Week ({maxWeek - 1})
+                  <Button variant="outline" className="retro-button text-xs sm:text-sm whitespace-nowrap">
+                    <span className="hidden sm:inline">Previous </span>Week {maxWeek - 1}
                   </Button>
                 </Link>
               )}

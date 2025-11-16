@@ -47,14 +47,29 @@ export function CollapsibleStatsGrid({
   mostConsistent,
   highestScoring,
 }: CollapsibleStatsGridProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  // Default to collapsed on mobile, open on desktop
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Load collapsed state from localStorage on mount
+  // Check if mobile on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored !== null) {
-      setIsOpen(stored === 'false'); // Note: stored value is string 'true' or 'false'
-    }
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      // Load collapsed state from localStorage on mount
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored !== null) {
+        setIsOpen(stored === 'true');
+      } else {
+        // Default: collapsed on mobile, open on desktop
+        setIsOpen(!mobile);
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Save collapsed state to localStorage when it changes

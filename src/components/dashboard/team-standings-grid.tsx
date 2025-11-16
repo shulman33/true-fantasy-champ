@@ -77,7 +77,7 @@ export function TeamStandingsGrid({ standings, className }: TeamStandingsGridPro
 
   return (
     <Card className={cn('border-4 border-retro-green bg-black/80 backdrop-blur-sm', className)}>
-      <CardHeader className="border-b-4 border-retro-green/30">
+      <CardHeader className="sticky top-16 md:top-20 z-10 bg-black/95 backdrop-blur-md border-b-4 border-retro-green/30">
         <CardTitle className="font-press-start text-base sm:text-xl text-retro-green uppercase tracking-wider">
           True Champion Standings
         </CardTitle>
@@ -164,9 +164,9 @@ export function TeamStandingsGrid({ standings, className }: TeamStandingsGridPro
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="p-3 sm:p-4 md:p-6">
         {/* Team Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {filteredStandings.map((team) => (
             <TeamStandingsCard key={team.teamId} team={team} />
           ))}
