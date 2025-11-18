@@ -86,7 +86,7 @@ export interface Player {
   proTeamId: number;
   defaultPositionId: number;
   eligibleSlots: number[];
-  injuryStatus?: 'ACTIVE' | 'QUESTIONABLE' | 'DOUBTFUL' | 'OUT' | 'INJURY_RESERVE';
+  injuryStatus?: string;
   stats?: Array<{
     scoringPeriodId: number;
     appliedTotal: number;

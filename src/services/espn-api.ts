@@ -11,7 +11,7 @@ const PlayerSchema = z.object({
   proTeamId: z.number().optional(),
   defaultPositionId: z.number().optional(),
   eligibleSlots: z.array(z.number()).optional(),
-  injuryStatus: z.enum(['ACTIVE', 'QUESTIONABLE', 'DOUBTFUL', 'OUT', 'INJURY_RESERVE']).optional(),
+  injuryStatus: z.string().optional(),
   stats: z.array(z.object({
     scoringPeriodId: z.number().optional(),
     appliedTotal: z.number().optional(),
